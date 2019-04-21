@@ -9,6 +9,7 @@ import java.util.Queue;
 
 @Data
 public class Room {
+    private int id;
     private List<User> users = new ArrayList<>();
-    private Queue<String> messages = new LinkedList<>();
+    private Queue<Message> messages = new LinkedList<>();
 }
