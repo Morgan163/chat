@@ -6,6 +6,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class User {
-    private final int id;
-    private final String name;
+    private int id;
+    private String name;
+
+    public User(String name){
+
+    }
 }

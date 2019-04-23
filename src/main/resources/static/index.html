@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Taco Cloud</title>
+</head>
+    <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+
+        <div id="username-part">
+            <form id="username-form" name="usernameForm">
+                <input type="text" id="username" placeholder="Username" class="username-field"/>
+                <button type="submit" id="username-button">Join to chat</button>
+            </form>
+        </div>
+        <div id="chat">
+            <div id="received-messages">
+                <table id="chat-table">
+                </table>
+            </div>
+            <form id="messageForm">
+                <input type="text" id="message-field" placeholder="Write message" class="message-filed"/>
+                <button type="submit" class="message-button">Send message</button>
+            </form>
+        </div>
+    <script src="/js/main.js"></script>
+    </body>
+</html>

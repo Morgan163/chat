@@ -2,6 +2,7 @@ package lukianov.andrei.chat.controller;
 
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.model.Room;
+import lukianov.andrei.chat.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -23,8 +24,10 @@ public class RoomController {
 
     @MessageMapping("/chat.addUserToRoom")
     @SendTo("/topic/room")
-    public Message addUserToRoom(Message message, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("user", message.getUser());
-        return message;
+    public Message addUserToRoom(User user, SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println("user connected "+user.getName());
+        room.getUsers().add(user);
+        headerAccessor.getSessionAttributes().put("user", user);
+        return new Message(user, String.format("%s joined",user.getName()));
     }
 }
