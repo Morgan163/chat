@@ -11,6 +11,14 @@ var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
+var options = {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric'
+};
 function connect(event) {
     username = document.querySelector('#username').value.trim();
     if(username) {
@@ -52,13 +60,19 @@ function onMessageReceived(payload) {
 }
 
 function writeMessage(message){
+    var newFirstRow = chatTable.insertRow(chatTable.rows.length);
+    var cell00 = newFirstRow.insertCell(0);
+    var cell01 = newFirstRow.insertCell(1);
     var newRow = chatTable.insertRow(chatTable.rows.length);
-    var cell0 = newRow.insertCell(0);
-    var cell1 = newRow.insertCell(1);
+    var cell10 = newRow.insertCell(0);
+    var cell11 = newRow.insertCell(1);
+    var date = new Date(message.messageDate);
     if(message.user.name == username){
-        cell1.innerHTML = message.messageString;
+        cell01.innerHTML = message.user.name + " " + date.toLocaleString("ru", options)
+        cell11.innerHTML = message.messageString;
     }else{
-        cell0.innerHTML = message.messageString;
+        cell00.innerHTML = message.user.name + " " + date.toLocaleString("ru", options)
+        cell10.innerHTML = message.messageString;
     }
 }
 

@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -22,6 +23,7 @@ public class RoomController {
     @MessageMapping("/chat.senMessage")
     @SendTo("/topic/room")
     public Message sendMessage(@Payload Message message) {
+        message.setMessageDate(new Date());
         room.getMessages().add(message);
         return message;
     }
@@ -39,7 +41,7 @@ public class RoomController {
     @MessageMapping("/chat.notifyOtherUsers")
     @SendTo("/topic/room")
     public Message notifyUsersAboutNewConnect(@Payload User user) {
-        Message message = new Message(user, String.format("%s joined", user.getName()));
+        Message message = new Message(user, String.format("%s joined", user.getName()), new Date());
         room.getMessages().add(message);
         return message;
     }
