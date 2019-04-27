@@ -21,9 +21,8 @@ function connect(event) {
     event.preventDefault();
 }
 function onConnected() {
-    // Subscribe to the Public Topic
     stompClient.subscribe('/topic/room', onMessageReceived);
-    // Tell your username to the server
+    stompClient.subscribe('/user/queue/reply', onMessageReceived);
 
     var user = {
         name : username
@@ -39,14 +38,24 @@ function onError(error) {
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
-        var newRow = chatTable.insertRow(chatTable.rows.length);
-        var cell0 = newRow.insertCell(0);
-        var cell1 = newRow.insertCell(1);
+    if(Array.isArray(message)){
+        message.forEach(function(item){
+            writeMessage(item);
+        });
+    }else{
+        writeMessage(message);
+    }
+}
+
+function writeMessage(message){
+    var newRow = chatTable.insertRow(chatTable.rows.length);
+    var cell0 = newRow.insertCell(0);
+    var cell1 = newRow.insertCell(1);
     if(message.user.name == username){
         cell1.innerHTML = message.messageString;
     }else{
         cell0.innerHTML = message.messageString;
-     }
+    }
 }
 
 function sendMessage(event){

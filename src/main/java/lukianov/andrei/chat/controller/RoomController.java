@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Controller
 public class RoomController {
@@ -23,11 +26,15 @@ public class RoomController {
     }
 
     @MessageMapping("/chat.addUserToRoom")
-    @SendTo("/topic/room")
-    public Message addUserToRoom(User user, SimpMessageHeaderAccessor headerAccessor) {
-        System.out.println("user connected "+user.getName());
-        room.getUsers().add(user);
-        headerAccessor.getSessionAttributes().put("user", user);
-        return new Message(user, String.format("%s joined",user.getName()));
+    @SendToUser("/queue/reply")
+    public List<Message> addUserToRoom(User user, SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println("user connected " + user.getName());
+        List<Message> messages = room.getMessages();
+        if (room.getUsers().add(user)) {
+            headerAccessor.getSessionAttributes().put("user", user);
+            messages.add(new Message(user, String.format("%s joined", user.getName())));
+        }
+        return messages;
     }
+
 }
