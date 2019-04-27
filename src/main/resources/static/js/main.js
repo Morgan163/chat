@@ -31,6 +31,10 @@ function onConnected() {
         {},
         JSON.stringify(user)
     )
+    stompClient.send("/app/chat.notifyOtherUsers",
+            {},
+            JSON.stringify(user)
+        )
 }
 function onError(error) {
 
