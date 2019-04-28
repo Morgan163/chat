@@ -57,7 +57,32 @@ function onMessageReceived(payload) {
 }
 
 function writeMessage(message){
-    var newFirstRow = chatTable.insertRow(chatTable.rows.length);
+    var date = new Date(message.messageDate);
+    var li = document.createElement('li');
+    li.classList.add('collection-item');
+    li.classList.add('avatar');
+    li.classList.add('noborder');
+   /* var i = document.createElement('i');
+    i.classList.add('material-icons');
+     i.classList.add('circle');
+     i.classList.add('right-align');
+    i.appendChild(document.createTextNode(message.user.name[0]+message.user.name[1]));*/
+    var span = document.createElement('span');
+    span.classList.add('title');
+    span.classList.add('small');
+    var p = document.createElement('h5');
+    p.appendChild(document.createTextNode(message.messageString));
+     if(message.user.name==username){
+            span.appendChild(document.createTextNode(date.toLocaleString("ru", options)+" "+message.user.name));
+            li.classList.add('right-align');
+     }else{
+            span.appendChild(document.createTextNode(message.user.name+" "+date.toLocaleString("ru", options)));
+     }
+    li.appendChild(span);
+    li.appendChild(p);
+    chat.appendChild(li);
+    chat.scrollTop = chat.scrollHeight;
+    /*var newFirstRow = chatTable.insertRow(chatTable.rows.length);
     var cell00 = newFirstRow.insertCell(0);
     var cell01 = newFirstRow.insertCell(1);
     var newRow = chatTable.insertRow(chatTable.rows.length);
@@ -70,23 +95,25 @@ function writeMessage(message){
     }else{
         cell00.innerHTML = message.user.name + " " + date.toLocaleString("ru", options)
         cell10.innerHTML = message.messageString;
-    }
+    }*/
 }
 
 function sendMessage(event){
     var messageText = messageField.value;
-    var currentUser = {
-            name : username
-        };
-    var message = {
-        user : currentUser,
-        messageString : messageText
+    if(messageText!=""){
+        var currentUser = {
+                name : username
+            };
+        var message = {
+            user : currentUser,
+            messageString : messageText
+        }
+        stompClient.send("/app/chat.senMessage",
+                {},
+                JSON.stringify(message)
+                )
+        messageField.value = '';
     }
-    stompClient.send("/app/chat.senMessage",
-            {},
-            JSON.stringify(message)
-            )
-    messageField.value = '';
     event.preventDefault();
 }
 messageForm.addEventListener('submit', sendMessage, true);

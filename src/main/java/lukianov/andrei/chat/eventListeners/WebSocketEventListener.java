@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Component
@@ -27,7 +28,7 @@ public class WebSocketEventListener {
         if (Objects.nonNull(user)) {
             room.getUsers().remove(user);
             messagingTemplate.convertAndSend("/topic/room",
-                    new Message(user, String.format("%s leaved", user.getName())));
+                    new Message(user, String.format("%s leaved", user.getName(), new Date())));
         }
     }
 
