@@ -1,6 +1,4 @@
 
-var usernamePart = document.querySelector('#username-part');
-var usernameForm = document.querySelector('#username-form');
 var chat = document.querySelector('#chat');
 var chatTable = document.querySelector('#chat-table');
 var messageField = document.querySelector('#message-field');
@@ -19,14 +17,13 @@ var options = {
   minute: 'numeric',
   second: 'numeric'
 };
-function connect(event) {
+function connect() {
     username = document.querySelector('#username').value.trim();
     if(username) {
         var socket = new SockJS('/chat');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, onConnected, onError);
     }
-    event.preventDefault();
 }
 function onConnected() {
     stompClient.subscribe('/topic/room', onMessageReceived);
@@ -92,5 +89,5 @@ function sendMessage(event){
     messageField.value = '';
     event.preventDefault();
 }
-usernameForm.addEventListener('submit', connect, true);
 messageForm.addEventListener('submit', sendMessage, true);
+connect();
