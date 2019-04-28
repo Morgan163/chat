@@ -11,7 +11,7 @@ var colors = [
 ];
 var options = {
   day: 'numeric',
-  month: 'long',
+  month: '2-digit',
   year: 'numeric',
   hour: 'numeric',
   minute: 'numeric',

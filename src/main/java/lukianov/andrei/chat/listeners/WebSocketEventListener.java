@@ -1,4 +1,4 @@
-package lukianov.andrei.chat.eventListeners;
+package lukianov.andrei.chat.listeners;
 
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.model.Room;
@@ -28,7 +28,7 @@ public class WebSocketEventListener {
         if (Objects.nonNull(user)) {
             room.getUsers().remove(user);
             messagingTemplate.convertAndSend("/topic/room",
-                    new Message(user, String.format("%s leaved", user.getName(), new Date())));
+                    new Message(user, String.format("%s leaved", user.getName()), new Date()));
         }
     }
 

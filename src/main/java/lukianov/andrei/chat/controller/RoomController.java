@@ -41,9 +41,7 @@ public class RoomController {
     @MessageMapping("/chat.notifyOtherUsers")
     @SendTo("/topic/room")
     public Message notifyUsersAboutNewConnect(@Payload User user) {
-        Message message = new Message(user, String.format("%s joined", user.getName()), new Date());
-        room.getMessages().add(message);
-        return message;
+        return new Message(user, String.format("%s joined", user.getName()), new Date());
     }
 
 
