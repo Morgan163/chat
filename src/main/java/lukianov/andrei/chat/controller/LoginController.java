@@ -15,13 +15,13 @@ public class LoginController {
     @Autowired
     private Room room;
 
-    @GetMapping("/login")
+    @GetMapping("/chat")
     public String loginForm(Model model) {
         model.addAttribute(LOGIN, "");
         return LOGIN;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/chat")
     public String login(@RequestParam String login, Model model){
         room.getUsers().add(new SimpleUser(login));
         model.addAttribute(LOGIN, login);

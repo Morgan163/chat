@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.model.Room;
 import lukianov.andrei.chat.model.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Controller
 public class RoomController {
 
@@ -31,7 +33,7 @@ public class RoomController {
     @MessageMapping("/chat.addUserToRoom")
     @SendToUser("/queue/reply")
     public List<Message> addUserToRoom(@Payload User user, SimpMessageHeaderAccessor headerAccessor) {
-        System.out.println("user connected " + user.getName());
+        log.info("user connected " + user.getName());
         if (room.getUsers().add(user)) {
             headerAccessor.getSessionAttributes().put("user", user);
         }
