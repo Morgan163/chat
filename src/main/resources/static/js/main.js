@@ -57,6 +57,9 @@ function onMessageReceived(payload) {
 }
 
 function writeMessage(message){
+    if(message.messageString==""){
+        return;
+    }
     var date = new Date(message.messageDate);
     var li = document.createElement('li');
     li.classList.add('collection-item');

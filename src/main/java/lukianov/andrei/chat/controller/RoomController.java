@@ -32,18 +32,19 @@ public class RoomController {
 
     @MessageMapping("/chat.addUserToRoom")
     @SendToUser("/queue/reply")
-    public List<Message> addUserToRoom(@Payload User user, SimpMessageHeaderAccessor headerAccessor) {
+    public List<Message> addUserToRoom(@Payload User user) {
         log.info("user connected " + user.getName());
-        if (room.getUsers().add(user)) {
-            headerAccessor.getSessionAttributes().put("user", user);
-        }
         return room.getMessages();
     }
 
     @MessageMapping("/chat.notifyOtherUsers")
     @SendTo("/topic/room")
-    public Message notifyUsersAboutNewConnect(@Payload User user) {
-        return new Message(user, String.format("%s joined", user.getName()), new Date());
+    public Message notifyUsersAboutNewConnect(@Payload User user, SimpMessageHeaderAccessor headerAccessor) {
+        if (room.getUsers().add(user)) {
+            headerAccessor.getSessionAttributes().put("user", user);
+            return new Message(user, String.format("%s joined", user.getName()), new Date());
+        }
+        return new Message(user, "");
     }
 
 
