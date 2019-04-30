@@ -1,8 +1,8 @@
 package lukianov.andrei.chat.listeners;
 
 import lukianov.andrei.chat.model.Message;
-import lukianov.andrei.chat.model.Room;
 import lukianov.andrei.chat.model.User;
+import lukianov.andrei.chat.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -18,15 +18,15 @@ public class WebSocketEventListener {
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
     @Autowired
-    private Room room;
+    private RoomService roomService;
 
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        User user = (User) stompHeaderAccessor.getSessionAttributes().get("user");
+        User user = (User) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("user");
         if (Objects.nonNull(user)) {
-            room.getUsers().remove(user);
+            roomService.deleteUserFromRoom(user);
             messagingTemplate.convertAndSend("/topic/room",
                     new Message(user, String.format("%s leaved", user.getName()), new Date()));
         }
