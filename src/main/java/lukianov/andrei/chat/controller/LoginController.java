@@ -1,7 +1,6 @@
 package lukianov.andrei.chat.controller;
 
-import lukianov.andrei.chat.model.Room;
-import lukianov.andrei.chat.model.User;
+import lukianov.andrei.chat.services.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +12,7 @@ public class LoginController {
 
     private static final String LOGIN = "login";
     @Autowired
-    private Room room;
+    private RoomService roomService;
 
     @GetMapping("/chat")
     public String loginForm(Model model) {
@@ -23,7 +22,6 @@ public class LoginController {
 
     @PostMapping("/chat")
     public String login(@RequestParam String login, Model model){
-        room.getUsers().add(new User(login));
         model.addAttribute(LOGIN, login);
         return "chat";
     }

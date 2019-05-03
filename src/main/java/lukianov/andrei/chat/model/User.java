@@ -5,13 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
-    private int id = 0;
     private String name;
-
-    public User(String name){
-
-    }
 }

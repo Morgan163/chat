@@ -43,6 +43,7 @@ public class RoomController {
     @SendTo("/topic/room")
     public Message notifyUsersAboutNewConnect(@Payload User user, SimpMessageHeaderAccessor headerAccessor) {
         if (roomService.addUserToRoom(user)) {
+            log.info(user.getName() + " was added to room");
             Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("user", user);
             return new Message(user, String.format("%s joined", user.getName()), new Date());
         }
