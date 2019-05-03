@@ -1,7 +1,7 @@
 package lukianov.andrei.chat.controller;
 
 import lukianov.andrei.chat.model.Room;
-import lukianov.andrei.chat.model.SimpleUser;
+import lukianov.andrei.chat.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +23,7 @@ public class LoginController {
 
     @PostMapping("/chat")
     public String login(@RequestParam String login, Model model){
-        room.getUsers().add(new SimpleUser(login));
+        room.getUsers().add(new User(login));
         model.addAttribute(LOGIN, login);
         return "chat";
     }
