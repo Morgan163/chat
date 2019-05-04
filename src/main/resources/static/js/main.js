@@ -19,6 +19,9 @@ var options = {
 };
 function connect() {
     username = document.querySelector('#username').value.trim();
+    if(username == null || username.match(/^ *$/) !== null){
+        return;
+    }
     if(username) {
         var socket = new SockJS('/chat');
         stompClient = Stomp.over(socket);
