@@ -3,7 +3,7 @@ package lukianov.andrei.chat.listeners;
 import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.model.User;
-import lukianov.andrei.chat.services.RoomService;
+import lukianov.andrei.chat.services.impl.RoomServiceImpl;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -17,7 +17,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class WebSocketEventListener {
     private final SimpMessageSendingOperations messagingTemplate;
-    private final RoomService roomService;
+    private final RoomServiceImpl roomServiceImpl;
 
 
     @EventListener
@@ -25,7 +25,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(event.getMessage());
         User user = (User) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("owner");
         if (Objects.nonNull(user)) {
-            roomService.deleteUserFromRoom(user);
+            roomServiceImpl.deleteUserFromRoom(user);
             messagingTemplate.convertAndSend("/topic/room",
                     new Message(user, String.format("%s leaved", user.getLogin()), new Date()));
         }

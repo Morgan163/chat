@@ -1,6 +1,6 @@
 package lukianov.andrei.chat.controller;
 
-import lukianov.andrei.chat.services.RoomService;
+import lukianov.andrei.chat.services.impl.RoomServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +12,7 @@ public class LoginController {
 
     private static final String LOGIN = "login";
     @Autowired
-    private RoomService roomService;
+    private RoomServiceImpl roomServiceImpl;
 
     @GetMapping("/chat")
     public String loginForm(Model model) {
