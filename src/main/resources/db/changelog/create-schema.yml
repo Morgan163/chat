@@ -1,0 +1,124 @@
+databaseChangeLog:
+  - preConditions:
+      - runningAs:
+          username: liquibase
+
+  - changeSet:
+      id: create
+      author: lukianov
+      changes:
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(25)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(25)
+
+        - createTable:
+            tableName: room
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(25)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: owner_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    references: user(id)
+
+        - createTable:
+            tableName: message
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    references: user(id)
+              - column:
+                  name: text
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: room_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    references: room(id)
+        - createTable:
+            tableName: users_in_room
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    references: user(id)
+              - column:
+                  name: room_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    references: room(id)
+
+  changeSet:
+    id: insert
+    author: lukianov
+    changes:
+      - sql:
+          sql: insert into user (login, password, role) values ("test1, "test1", "USER")
+      - sql:
+          sql: insert into user (login, password, role) values ("test2, "test2", "MODERATOR")
+      - sql:
+          sql: insert into user (login, password, role) values ("test3, "test3", "ADMINISTRATOR")
+
+
