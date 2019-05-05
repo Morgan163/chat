@@ -33,7 +33,7 @@ function onConnected() {
     stompClient.subscribe('/user/queue/reply', onMessageReceived);
 
     var user = {
-        name : username
+        login : username
     };
     stompClient.send("/app/chat.addUserToRoom",
         {},
@@ -111,8 +111,8 @@ function sendMessage(event){
                 name : username
             };
         var message = {
-            user : currentUser,
-            messageString : messageText
+            owner : currentUser,
+            text : messageText
         }
         stompClient.send("/app/chat.senMessage",
                 {},

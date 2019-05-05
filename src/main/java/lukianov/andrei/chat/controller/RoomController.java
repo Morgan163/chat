@@ -27,7 +27,7 @@ public class RoomController {
     @MessageMapping("/chat.senMessage")
     @SendTo("/topic/room")
     public Message sendMessage(@Payload Message message) {
-        message.setMessageDate(new Date());
+        message.setDate(new Date());
         roomService.addMessageToRoom(message);
         return message;
     }
@@ -35,7 +35,7 @@ public class RoomController {
     @MessageMapping("/chat.addUserToRoom")
     @SendToUser("/queue/reply")
     public List<Message> addUserToRoom(@Payload User user) {
-        log.info("user connected " + user.getName());
+        log.info("owner connected " + user.getLogin());
         return roomService.getAllMessages();
     }
 
@@ -43,9 +43,9 @@ public class RoomController {
     @SendTo("/topic/room")
     public Message notifyUsersAboutNewConnect(@Payload User user, SimpMessageHeaderAccessor headerAccessor) {
         if (roomService.addUserToRoom(user)) {
-            log.info(user.getName() + " was added to room");
-            Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("user", user);
-            return new Message(user, String.format("%s joined", user.getName()), new Date());
+            log.info(user.getLogin() + " was added to room");
+            Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("owner", user);
+            return new Message(user, String.format("%s joined", user.getLogin()), new Date());
         }
         return new Message(user, "");
     }

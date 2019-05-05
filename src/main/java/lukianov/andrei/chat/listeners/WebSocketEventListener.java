@@ -23,11 +23,11 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        User user = (User) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("user");
+        User user = (User) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("owner");
         if (Objects.nonNull(user)) {
             roomService.deleteUserFromRoom(user);
             messagingTemplate.convertAndSend("/topic/room",
-                    new Message(user, String.format("%s leaved", user.getName()), new Date()));
+                    new Message(user, String.format("%s leaved", user.getLogin()), new Date()));
         }
     }
 
