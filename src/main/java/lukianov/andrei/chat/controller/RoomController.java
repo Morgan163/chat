@@ -24,7 +24,7 @@ public class RoomController {
     @Autowired
     private RoomServiceImpl roomServiceImpl;
 
-    @MessageMapping("/chat.senMessage")
+    @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/room")
     public Message sendMessage(@Payload Message message) {
         message.setDate(new Date());
