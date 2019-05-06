@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.config;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +11,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
@@ -28,10 +31,11 @@ public class DataConfig {
     private static final String PROP_DATABASE_PASSWORD = "db.password";
     private static final String PROP_DATABASE_URL = "db.url";
     private static final String PROP_DATABASE_USERNAME = "db.username";
-    private static final String PROP_HIBERNATE_DIALECT = "db.hibernate.dialect";
-    private static final String PROP_HIBERNATE_SHOW_SQL = "db.hibernate.show_sql";
-    private static final String PROP_ENTITYMANAGER_PACKAGES_TO_SCAN = "db.entitymanager.packages.to.scan";
-    private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "db.hibernate.hbm2ddl.auto";
+    private static final String PROP_HIBERNATE_DIALECT = "hibernate.dialect";
+    private static final String PROP_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+    private static final String PROP_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
+    private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
+    private static final String PROP_LIQUIBASE_CHANGELOG = "spring.liquibase.change-log";
 
     @Resource
     private Environment environment;
@@ -44,20 +48,21 @@ public class DataConfig {
         dataSource.setUrl(environment.getRequiredProperty(PROP_DATABASE_URL));
         dataSource.setUsername(environment.getRequiredProperty(PROP_DATABASE_USERNAME));
         dataSource.setPassword(environment.getRequiredProperty(PROP_DATABASE_PASSWORD));
+        //dataSource.setSchema("public");
 
         return dataSource;
     }
 
     @Bean
-    @ConditionalOnMissingBean({LocalContainerEntityManagerFactoryBean.class, EntityManagerFactory.class})
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource());
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         entityManagerFactoryBean.setPackagesToScan(environment
                 .getRequiredProperty(PROP_ENTITYMANAGER_PACKAGES_TO_SCAN));
-
         entityManagerFactoryBean.setJpaProperties(getHibernateProperties());
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        entityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
 
         return entityManagerFactoryBean;
     }
@@ -71,9 +76,18 @@ public class DataConfig {
 
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
+        properties.put("spring.jpa.database", "postgresql");
         properties.put(PROP_HIBERNATE_DIALECT, environment.getRequiredProperty(PROP_HIBERNATE_DIALECT));
         properties.put(PROP_HIBERNATE_SHOW_SQL, environment.getRequiredProperty(PROP_HIBERNATE_SHOW_SQL));
         properties.put(PROP_HIBERNATE_HBM2DDL_AUTO, environment.getRequiredProperty(PROP_HIBERNATE_HBM2DDL_AUTO));
         return properties;
+    }
+
+    @Bean
+    public SpringLiquibase liquibase() {
+        SpringLiquibase liquibase = new SpringLiquibase();
+        liquibase.setChangeLog(environment.getRequiredProperty(PROP_LIQUIBASE_CHANGELOG));
+        liquibase.setDataSource(dataSource());
+        return liquibase;
     }
 }

@@ -1,7 +1,5 @@
 databaseChangeLog:
-  - preConditions:
-      - runningAs:
-          username: liquibase
+
 
   - changeSet:
       id: create
@@ -53,6 +51,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: ownerFK
                     references: user(id)
 
         - createTable:
@@ -70,6 +69,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: messageOwnerFK
                     references: user(id)
               - column:
                   name: text
@@ -86,6 +86,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: roomFK
                     references: room(id)
         - createTable:
             tableName: users_in_room
@@ -102,23 +103,66 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: userInRoomFK
                     references: user(id)
               - column:
                   name: room_id
                   type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: roomForUsersFK
                     references: room(id)
 
-  changeSet:
-    id: insert
-    author: lukianov
-    changes:
-      - sql:
-          sql: insert into user (login, password, role) values ("test1, "test1", "USER")
-      - sql:
-          sql: insert into user (login, password, role) values ("test2, "test2", "MODERATOR")
-      - sql:
-          sql: insert into user (login, password, role) values ("test3, "test3", "ADMINISTRATOR")
+  - changeSet:
+      id: insert
+      author: lukianov
+      changes:
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: login
+                  value: "test1"
+              - column:
+                  name: password
+                  value: "test1"
+              - column:
+                  name: role
+                  value: "USER"
+
+  - changeSet:
+      id: insert2
+      author: lukianov
+      changes:
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: login
+                  value: "test2"
+              - column:
+                  name: password
+                  value: "test2"
+              - column:
+                  name: role
+                  value: "MODERATOR"
+        - insert:
+            tableName: user
+            columns:
+              - column:
+                  name: login
+                  value: "test3"
+              - column:
+                  name: password
+                  value: "test3"
+              - column:
+                  name: role
+                  value: "ADMINISTRATOR"
+        #- sql:
+         #   sql: insert into public.user (login, password, role) values ("test1", "test1", "USER")
+        #- sql:
+         #   sql: insert into public.user (login, password, role) values ("test2", "test2", "MODERATOR")
+        #- sql:
+         #   sql: insert into public.user (login, password, role) values ("test3", "test3", "ADMINISTRATOR")
 
 

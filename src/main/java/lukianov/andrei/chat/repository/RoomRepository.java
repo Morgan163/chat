@@ -7,6 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    @Query("select r from room r where r.name = :name")
+    @Query("select r from Room r where r.name = :name")
     Room findByName(@Param("name") String name);
 }

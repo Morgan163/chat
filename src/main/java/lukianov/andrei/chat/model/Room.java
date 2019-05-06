@@ -34,7 +34,6 @@ public class Room implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
 
-    @ManyToOne
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Message> messages;
 }
