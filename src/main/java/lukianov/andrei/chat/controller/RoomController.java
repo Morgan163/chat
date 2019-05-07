@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.model.User;
@@ -16,13 +17,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+@RequiredArgsConstructor
 @Slf4j
 @Controller
 public class RoomController {
 
-
-    @Autowired
-    private RoomServiceImpl roomServiceImpl;
+    private final RoomServiceImpl roomServiceImpl;
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/room")
@@ -35,7 +35,7 @@ public class RoomController {
     @MessageMapping("/chat.addUserToRoom")
     @SendToUser("/queue/reply")
     public List<Message> addUserToRoom(@Payload User user) {
-        log.info("owner connected " + user.getLogin());
+        log.info("user connected " + user.getLogin());
         return roomServiceImpl.getAllMessages();
     }
 

@@ -48,7 +48,6 @@ public class DataConfig {
         dataSource.setUrl(environment.getRequiredProperty(PROP_DATABASE_URL));
         dataSource.setUsername(environment.getRequiredProperty(PROP_DATABASE_USERNAME));
         dataSource.setPassword(environment.getRequiredProperty(PROP_DATABASE_PASSWORD));
-        //dataSource.setSchema("public");
 
         return dataSource;
     }

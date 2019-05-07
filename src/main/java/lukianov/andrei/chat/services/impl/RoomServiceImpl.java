@@ -1,21 +1,20 @@
 package lukianov.andrei.chat.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.model.Room;
 import lukianov.andrei.chat.model.User;
 import lukianov.andrei.chat.repository.RoomRepository;
 import lukianov.andrei.chat.services.RoomService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
-    @Autowired
-    private RoomRepository roomRepository;
-
+    private final RoomRepository roomRepository;
 
     private final Room room = new Room();
 

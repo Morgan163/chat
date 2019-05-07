@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.config;
 
+import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.services.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
+
 
     // регистрируем нашу реализацию UserDetailsService
     // а также PasswordEncoder для приведения пароля в формат SHA1
@@ -39,11 +41,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordParameter("password")
                 .permitAll();*/
         http.authorizeRequests()
-                .antMatchers("/chat")
+                .antMatchers("/login")
                 .permitAll()
                 .and()
                 .formLogin()
-                .loginPage("/chat")
+                .loginPage("/login")
                 .defaultSuccessUrl("/chat")
                 .failureUrl("/login?error=true")
                 .usernameParameter("login")

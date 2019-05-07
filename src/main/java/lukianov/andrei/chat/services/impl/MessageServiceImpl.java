@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.repository.MessageRepository;
 import lukianov.andrei.chat.services.MessageService;
@@ -8,11 +9,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class MessageServiceImpl implements MessageService {
 
-    @Autowired
-    private MessageRepository messageRepository;
+    private final MessageRepository messageRepository;
+
 
     @Override
     public Message addMessage(Message message) {
