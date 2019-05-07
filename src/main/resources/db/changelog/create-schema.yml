@@ -23,7 +23,7 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: password
-                  type: varchar(50)
+                  type: varchar(100)
                   constraints:
                     nullable: false
               - column:
@@ -114,7 +114,7 @@ databaseChangeLog:
                     references: room(id)
 
   - changeSet:
-      id: insert
+      id: insert3
       author: lukianov
       changes:
         - insert:
@@ -125,15 +125,10 @@ databaseChangeLog:
                   value: "test1"
               - column:
                   name: password
-                  value: "test1"
+                  value: "$2a$10$uKpKE0RCGAelI3Y34kZJUOCVE9zbFlreqbR0HaVmeNT6G3kc7alfC"
               - column:
                   name: role
                   value: "USER"
-
-  - changeSet:
-      id: insert2
-      author: lukianov
-      changes:
         - insert:
             tableName: user
             columns:
@@ -142,7 +137,7 @@ databaseChangeLog:
                   value: "test2"
               - column:
                   name: password
-                  value: "test2"
+                  value: "$2a$10$U81k/DToKP2e04aOauZZ5.r1co0vFAZBmU9WZWj5RyblHOtWwQFJe"
               - column:
                   name: role
                   value: "MODERATOR"
@@ -154,7 +149,7 @@ databaseChangeLog:
                   value: "test3"
               - column:
                   name: password
-                  value: "test3"
+                  value: "$2a$10$SzxlgarBeaWg40HOaxW67OQkiVhYZI0XRwBBd6H6pEjsvbI4cw4n6"
               - column:
                   name: role
                   value: "ADMINISTRATOR"

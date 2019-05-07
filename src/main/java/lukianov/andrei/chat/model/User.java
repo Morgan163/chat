@@ -12,7 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "user", schema = "public")
 public class User implements Serializable {
     @Id
     @GeneratedValue(generator = "increment")

@@ -14,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "message")
+@Table(name = "message", schema = "public")
 public class Message implements Serializable {
     @Id
     @GeneratedValue(generator = "increment")
