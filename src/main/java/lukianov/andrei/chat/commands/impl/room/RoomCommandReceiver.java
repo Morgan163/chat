@@ -3,16 +3,13 @@ package lukianov.andrei.chat.commands.impl.room;
 import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.commands.TextCommands;
 import lukianov.andrei.chat.exceptions.RoomCommandExecutionException;
-import lukianov.andrei.chat.model.Role;
-import lukianov.andrei.chat.model.Room;
-import lukianov.andrei.chat.model.User;
-import lukianov.andrei.chat.model.UserInRoom;
+import lukianov.andrei.chat.model.*;
 import lukianov.andrei.chat.services.RoomService;
 import lukianov.andrei.chat.services.UserInRoomService;
 import lukianov.andrei.chat.services.UserService;
 
+import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +35,7 @@ class RoomCommandReceiver {
     private final UserInRoomService userInRoomService;
     private final UserService userService;
 
-    Optional<Room> createRoom() throws RoomCommandExecutionException {
+    Message createRoom() throws RoomCommandExecutionException {
         Matcher matcher = Pattern.compile(CREATE_PRIVATE_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
             return createPrivateRoom(matcher.group(1));
@@ -50,22 +47,24 @@ class RoomCommandReceiver {
         throw new RoomCommandExecutionException("Room name not specify");
     }
 
-    private Optional<Room> createPublicRoom(String roomName) {
+    private Message createPublicRoom(String roomName) {
         Room room = new Room();
         room.setName(roomName);
         room.setOwner(userParameter);
-        return Optional.of(roomService.addRoom(room));
+        return createMessage(roomService.addRoom(room), userParameter, String.format("room %s was created", roomName),
+                null, MessageType.CREATE);
     }
 
-    private Optional<Room> createPrivateRoom(String roomName) {
+    private Message createPrivateRoom(String roomName) {
         Room room = new Room();
         room.setName(roomName);
         room.setOwner(userParameter);
         room.setPrivate(true);
-        return Optional.of(roomService.addRoom(room));
+        return createMessage(roomService.addRoom(room), userParameter, String.format("room %s was created", roomName),
+                null, MessageType.CREATE);
     }
 
-    Optional<Room> removeRoom() throws RoomCommandExecutionException {
+    Message removeRoom() throws RoomCommandExecutionException {
         Matcher matcher = Pattern.compile(REMOVE_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
             return removeRoom(matcher.group(1));
@@ -73,16 +72,17 @@ class RoomCommandReceiver {
         throw new RoomCommandExecutionException("Room name not specify");
     }
 
-    private Optional<Room> removeRoom(String roomName) throws RoomCommandExecutionException {
+    private Message removeRoom(String roomName) throws RoomCommandExecutionException {
         Room room = roomService.getRoomByName(roomName);
         if (Objects.isNull(room)) {
             throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
         roomService.delete(room);
-        return Optional.empty();
+        return createMessage(room, userParameter, String.format("room %s was deleted", roomName),
+                null, MessageType.REMOVE);
     }
 
-    Optional<Room> connectToRoom() throws RoomCommandExecutionException {
+    Message connectToRoom() throws RoomCommandExecutionException {
         Matcher matcher = Pattern.compile(CONNECT_USER_TO_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
             return connectToRoom(matcher.group(1));
@@ -94,7 +94,7 @@ class RoomCommandReceiver {
         throw new RoomCommandExecutionException("Room name or userParameter login not specify");
     }
 
-    private Optional<Room> connectToRoom(String roomName) throws RoomCommandExecutionException {
+    private Message connectToRoom(String roomName) throws RoomCommandExecutionException {
         Room room = roomService.getRoomByName(roomName);
         if (Objects.isNull(room)) {
             throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
@@ -103,10 +103,11 @@ class RoomCommandReceiver {
         userInRoom.setUser(userParameter);
         userInRoom.setRoom(room);
         userInRoomService.addUserInRoom(userInRoom);
-        return Optional.of(room);
+        return createMessage(room, userParameter, String.format("user %s was joined", userParameter.getLogin()),
+                null, MessageType.CONNECT);
     }
 
-    private Optional<Room> connectToRoom(String roomName, String userLogin) throws RoomCommandExecutionException {
+    private Message connectToRoom(String roomName, String userLogin) throws RoomCommandExecutionException {
         Room room = roomService.getRoomByName(roomName);
         if (Objects.isNull(room)) {
             throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
@@ -119,10 +120,11 @@ class RoomCommandReceiver {
         userInRoom.setUser(specifiedUser);
         userInRoom.setRoom(room);
         userInRoomService.addUserInRoom(userInRoom);
-        return Optional.of(room);
+        return createMessage(room, specifiedUser, String.format("user %s was joined", specifiedUser.getLogin()),
+                specifiedUser, MessageType.CONNECT);
     }
 
-    Optional<Room> disconnect() throws RoomCommandExecutionException {
+    Message disconnect() throws RoomCommandExecutionException {
         Matcher matcher = Pattern.compile(DISCONNECT_USER_FROM_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
             return disconnect(matcher.group(1));
@@ -134,12 +136,13 @@ class RoomCommandReceiver {
                 throw new RoomCommandExecutionException("User is not in this roomParameter");
             }
             userInRoomService.delete(userInRoom);
-            return Optional.of(roomParameter);
+            return createMessage(roomParameter, userParameter, String.format("user %s was disconnected",
+                    userParameter.getLogin()), null, MessageType.DISCONNECT);
         }
         throw new RoomCommandExecutionException("Command is not correct");
     }
 
-    private Optional<Room> disconnect(String userLogin) throws RoomCommandExecutionException {
+    private Message disconnect(String userLogin) throws RoomCommandExecutionException {
         if (roomParameter.getOwner().equals(userParameter) || userParameter.getRole().equals(Role.ADMINISTRATOR)) {
             User specifiedUser = userService.getUserByLogin(userLogin);
             if (Objects.isNull(specifiedUser)) {
@@ -150,12 +153,13 @@ class RoomCommandReceiver {
                 throw new RoomCommandExecutionException("User is not in this roomParameter");
             }
             userInRoomService.delete(userInRoom);
-            return Optional.of(roomParameter);
+            return createMessage(roomParameter, userParameter, String.format("user %s was disconnected",
+                    specifiedUser.getLogin()), specifiedUser, MessageType.DISCONNECT);
         }
         throw new RoomCommandExecutionException("You have not permission");
     }
 
-    Optional<Room> rename() throws RoomCommandExecutionException {
+    Message rename() throws RoomCommandExecutionException {
         if (roomParameter.getOwner().equals(userParameter) || userParameter.getRole().equals(Role.ADMINISTRATOR)) {
             Matcher matcher = Pattern.compile(RENAME_ROOM_REGEXP).matcher(command);
             if (matcher.find()) {
@@ -166,9 +170,21 @@ class RoomCommandReceiver {
         throw new RoomCommandExecutionException("You have not permission");
     }
 
-    private Optional<Room> rename(String roomName) {
+    private Message rename(String roomName) {
         roomParameter.setName(roomName);
-        return Optional.of(roomService.editRoom(roomParameter));
+        return createMessage(roomParameter, userParameter, String.format("user %s renamed room to %s",
+                userParameter.getLogin(), roomName), null, MessageType.RENAME);
+    }
+
+    private Message createMessage(Room room, User user, String text, User messageAbout, MessageType messageType) {
+        Message message = new Message();
+        message.setRoom(roomService.addRoom(room));
+        message.setOwner(user);
+        message.setDate(new Date());
+        message.setText(text);
+        message.setMessageAbout(messageAbout);
+        message.setMessageType(messageType);
+        return message;
     }
 
 }

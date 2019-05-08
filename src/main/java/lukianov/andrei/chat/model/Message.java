@@ -36,6 +36,9 @@ public class Message implements Serializable {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
+    private MessageType messageType;
+    private User messageAbout;
+
     public Message(User owner, String text) {
         this.owner = owner;
         this.text = text;

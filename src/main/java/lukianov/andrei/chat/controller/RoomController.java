@@ -2,14 +2,18 @@ package lukianov.andrei.chat.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lukianov.andrei.chat.model.ClientMessage;
 import lukianov.andrei.chat.model.Message;
+import lukianov.andrei.chat.model.MessageType;
 import lukianov.andrei.chat.model.User;
+import lukianov.andrei.chat.services.ClientMessageService;
 import lukianov.andrei.chat.services.impl.RoomServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
@@ -24,15 +28,19 @@ public class RoomController {
 
     private final RoomServiceImpl roomServiceImpl;
 
-    @MessageMapping("/chat.sendMessage")
+    private final SimpMessageSendingOperations messagingTemplate;
+
+    private final ClientMessageService clientMessageService;
+
+    /*@MessageMapping("/chat.sendMessage")
     @SendTo("/topic/room")
     public Message sendMessage(@Payload Message message) {
         message.setDate(new Date());
         roomServiceImpl.addMessageToRoom(message);
         return message;
-    }
+    }*/
 
-    @MessageMapping("/chat.addUserToRoom")
+    /*@MessageMapping("/chat.addUserToRoom")
     @SendToUser("/queue/reply")
     public List<Message> addUserToRoom(@Payload User user) {
         log.info("user connected " + user.getLogin());
@@ -48,6 +56,32 @@ public class RoomController {
             return new Message(user, String.format("%s joined", user.getLogin()), new Date());
         }
         return new Message(user, "");
+    }*/
+
+    @MessageMapping("/chat.general")
+    @SendToUser("/queue/reply")
+    public Message generalMessage(@Payload ClientMessage clientMessage, SimpMessageHeaderAccessor headerAccessor) {
+        return clientMessageService.createMessage(clientMessage);
+    }
+
+    @MessageMapping("/chat/{roomName}/sendMessage")
+    public void sendMessage(@DestinationVariable String roomName, @Payload ClientMessage clientMessage) {
+        Message message = clientMessageService.createMessage(clientMessage);
+        if (message.getMessageType().equals(MessageType.CONNECT) && Objects.nonNull(message.getMessageAbout())) {
+            messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), "/queue/reply",
+                    message);
+        }
+        messagingTemplate.convertAndSend("/topic/" + roomName, message);
+    }
+
+    @MessageMapping("/chat/{roomName}/addUser")
+    public void addUser(@DestinationVariable String roomName, @Payload ClientMessage clientMessage, SimpMessageHeaderAccessor headerAccessor) {
+        Message message = clientMessageService.createMessage(clientMessage);
+        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("user", message.getOwner());
+        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("room", message.getRoom());
+        messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), "/queue/reply",
+                message.getRoom().getMessages());
+        messagingTemplate.convertAndSend("/topic/" + roomName, message);
     }
 
 

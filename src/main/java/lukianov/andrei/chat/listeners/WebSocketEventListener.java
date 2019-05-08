@@ -2,6 +2,7 @@ package lukianov.andrei.chat.listeners;
 
 import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.model.Message;
+import lukianov.andrei.chat.model.Room;
 import lukianov.andrei.chat.model.User;
 import lukianov.andrei.chat.services.impl.RoomServiceImpl;
 import org.springframework.context.event.EventListener;
@@ -23,10 +24,11 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        User user = (User) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("owner");
-        if (Objects.nonNull(user)) {
+        User user = (User) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("user");
+        Room room = (Room) Objects.requireNonNull(stompHeaderAccessor.getSessionAttributes()).get("room");
+        if (Objects.nonNull(user) && Objects.nonNull(room)) {
             roomServiceImpl.deleteUserFromRoom(user);
-            messagingTemplate.convertAndSend("/topic/room",
+            messagingTemplate.convertAndSend("/topic/" + room.getName(),
                     new Message(user, String.format("%s leaved", user.getLogin()), new Date()));
         }
     }

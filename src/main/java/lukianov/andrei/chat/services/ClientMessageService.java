@@ -13,7 +13,6 @@ import lukianov.andrei.chat.services.impl.UserServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,19 +47,16 @@ public class ClientMessageService {
         RoomCommandClient roomCommandClient = new RoomCommandClient(clientMessage.getContent(),
                 user, room, roomService, userInRoomService, userService);
         RoomCommandExecutor roomCommandExecutor = new RoomCommandExecutor();
-        Optional<Room> roomOptional;
-        Message message = new Message();
-        message.setOwner(user);
-        message.setDate(new Date());
         try {
-            roomOptional = roomCommandExecutor.executeCommand(roomCommandClient.resolveRoomCommand());
+            return roomCommandExecutor.executeCommand(roomCommandClient.resolveRoomCommand());
         } catch (RoomCommandExecutionException ex) {
+            Message message = new Message();
+            message.setOwner(user);
+            message.setDate(new Date());
             log.error(ex.getMessage());
-            message.setText(ERROR_MESSAGE);
+            message.setText("ERROR " + ex.getMessage());
+            message.setMessageType(MessageType.ERROR);
             return message;
         }
-        roomOptional.ifPresent(message::setRoom);
-        message.setText(clientMessage.getContent());
-        return message;
     }
 }
