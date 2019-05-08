@@ -1,8 +1,9 @@
-package lukianov.andrei.chat.commands.impl;
+package lukianov.andrei.chat.commands.impl.room;
 
 import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.commands.TextCommands;
 import lukianov.andrei.chat.exceptions.RoomCommandExecutionException;
+import lukianov.andrei.chat.model.Role;
 import lukianov.andrei.chat.model.Room;
 import lukianov.andrei.chat.model.User;
 import lukianov.andrei.chat.model.UserInRoom;
@@ -16,7 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
-public class RoomCommandReceiver {
+class RoomCommandReceiver {
+    private static final String ROOM_NOT_SPECIFIED = "Room not found by specified name";
     private static final String SPACE_AND_WORD_REGEXP = "\\s(.*)";
     private static final String CREATE_ROOM_REGEXP = TextCommands.ROOM_CREATE + SPACE_AND_WORD_REGEXP;
     private static final String CREATE_PRIVATE_ROOM_REGEXP = TextCommands.ROOM_CREATE + "\\s-c" + SPACE_AND_WORD_REGEXP;
@@ -74,7 +76,7 @@ public class RoomCommandReceiver {
     private Optional<Room> removeRoom(String roomName) throws RoomCommandExecutionException {
         Room room = roomService.getRoomByName(roomName);
         if (Objects.isNull(room)) {
-            throw new RoomCommandExecutionException("Room not found by specified name");
+            throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
         roomService.delete(room);
         return Optional.empty();
@@ -95,7 +97,7 @@ public class RoomCommandReceiver {
     private Optional<Room> connectToRoom(String roomName) throws RoomCommandExecutionException {
         Room room = roomService.getRoomByName(roomName);
         if (Objects.isNull(room)) {
-            throw new RoomCommandExecutionException("Room not found by specified name");
+            throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
         UserInRoom userInRoom = new UserInRoom();
         userInRoom.setUser(userParameter);
@@ -107,7 +109,7 @@ public class RoomCommandReceiver {
     private Optional<Room> connectToRoom(String roomName, String userLogin) throws RoomCommandExecutionException {
         Room room = roomService.getRoomByName(roomName);
         if (Objects.isNull(room)) {
-            throw new RoomCommandExecutionException("Room not found by specified name");
+            throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
         User specifiedUser = userService.getUserByLogin(userLogin);
         if (Objects.isNull(specifiedUser)) {
@@ -138,24 +140,30 @@ public class RoomCommandReceiver {
     }
 
     private Optional<Room> disconnect(String userLogin) throws RoomCommandExecutionException {
-        User specifiedUser = userService.getUserByLogin(userLogin);
-        if (Objects.isNull(specifiedUser)) {
-            throw new RoomCommandExecutionException("User not found by specified login");
+        if (roomParameter.getOwner().equals(userParameter) || userParameter.getRole().equals(Role.ADMINISTRATOR)) {
+            User specifiedUser = userService.getUserByLogin(userLogin);
+            if (Objects.isNull(specifiedUser)) {
+                throw new RoomCommandExecutionException("User not found by specified login");
+            }
+            UserInRoom userInRoom = userInRoomService.findByUserAndRoom(specifiedUser, roomParameter);
+            if (Objects.isNull(userInRoom)) {
+                throw new RoomCommandExecutionException("User is not in this roomParameter");
+            }
+            userInRoomService.delete(userInRoom);
+            return Optional.of(roomParameter);
         }
-        UserInRoom userInRoom = userInRoomService.findByUserAndRoom(specifiedUser, roomParameter);
-        if (Objects.isNull(userInRoom)) {
-            throw new RoomCommandExecutionException("User is not in this roomParameter");
-        }
-        userInRoomService.delete(userInRoom);
-        return Optional.of(roomParameter);
+        throw new RoomCommandExecutionException("You have not permission");
     }
 
     Optional<Room> rename() throws RoomCommandExecutionException {
-        Matcher matcher = Pattern.compile(RENAME_ROOM_REGEXP).matcher(command);
-        if (matcher.find()) {
-            return rename(matcher.group(1));
+        if (roomParameter.getOwner().equals(userParameter) || userParameter.getRole().equals(Role.ADMINISTRATOR)) {
+            Matcher matcher = Pattern.compile(RENAME_ROOM_REGEXP).matcher(command);
+            if (matcher.find()) {
+                return rename(matcher.group(1));
+            }
+            throw new RoomCommandExecutionException("New room name not specify");
         }
-        throw new RoomCommandExecutionException("New room name not specify");
+        throw new RoomCommandExecutionException("You have not permission");
     }
 
     private Optional<Room> rename(String roomName) {

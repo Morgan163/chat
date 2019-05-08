@@ -68,11 +68,6 @@ function writeMessage(message){
     li.classList.add('collection-item');
     li.classList.add('avatar');
     li.classList.add('noborder');
-   /* var i = document.createElement('i');
-    i.classList.add('material-icons');
-     i.classList.add('circle');
-     i.classList.add('right-align');
-    i.appendChild(document.createTextNode(message.user.name[0]+message.user.name[1]));*/
     var span = document.createElement('span');
     span.classList.add('title');
     span.classList.add('small');
@@ -88,20 +83,6 @@ function writeMessage(message){
     li.appendChild(p);
     chat.appendChild(li);
     chat.scrollTop = chat.scrollHeight;
-    /*var newFirstRow = chatTable.insertRow(chatTable.rows.length);
-    var cell00 = newFirstRow.insertCell(0);
-    var cell01 = newFirstRow.insertCell(1);
-    var newRow = chatTable.insertRow(chatTable.rows.length);
-    var cell10 = newRow.insertCell(0);
-    var cell11 = newRow.insertCell(1);
-    var date = new Date(message.messageDate);
-    if(message.user.name == username){
-        cell01.innerHTML = message.user.name + " " + date.toLocaleString("ru", options)
-        cell11.innerHTML = message.messageString;
-    }else{
-        cell00.innerHTML = message.user.name + " " + date.toLocaleString("ru", options)
-        cell10.innerHTML = message.messageString;
-    }*/
 }
 
 function sendMessage(event){

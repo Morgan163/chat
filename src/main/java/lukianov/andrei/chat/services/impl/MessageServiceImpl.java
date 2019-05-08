@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.model.Message;
 import lukianov.andrei.chat.repository.MessageRepository;
 import lukianov.andrei.chat.services.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,4 +34,5 @@ public class MessageServiceImpl implements MessageService {
     public List<Message> getAll() {
         return messageRepository.findAll();
     }
+
 }
