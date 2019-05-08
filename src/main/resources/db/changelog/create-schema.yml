@@ -53,6 +53,11 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: ownerFK
                     references: user(id)
+              - column:
+                  name: is_private
+                  type: bool
+                  constraints:
+                    nullable: false
 
         - createTable:
             tableName: message

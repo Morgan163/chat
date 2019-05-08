@@ -5,17 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "message", schema = "public")
-public class Message implements Serializable {
+@Table(name = "users_in_room", schema = "public")
+public class UserInRoom {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
@@ -23,27 +20,10 @@ public class Message implements Serializable {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "owner_id", nullable = false)
-    private User owner;
-
-    @Column(name = "text")
-    private String text;
-
-    @Column(name = "date")
-    private Date date;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
-
-    public Message(User owner, String text) {
-        this.owner = owner;
-        this.text = text;
-    }
-
-    public Message(User owner, String text, Date date) {
-        this.owner = owner;
-        this.text = text;
-        this.date = date;
-    }
 }

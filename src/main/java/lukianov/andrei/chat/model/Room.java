@@ -24,7 +24,7 @@ public class Room implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
@@ -36,4 +36,7 @@ public class Room implements Serializable {
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Message> messages;
+
+    @Column(name = "is_private", nullable = false)
+    private boolean isPrivate;
 }
