@@ -35,7 +35,7 @@ public class User implements Serializable {
     @JoinTable(name = "users_in_rooms",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
-    private List<User> users;
+    private List<Room> rooms;
 
     public User(String login, String password, Role role) {
         this.login = login;

@@ -2,12 +2,10 @@ package lukianov.andrei.chat.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lukianov.andrei.chat.model.ClientMessage;
-import lukianov.andrei.chat.model.Message;
-import lukianov.andrei.chat.model.MessageType;
-import lukianov.andrei.chat.model.User;
+import lukianov.andrei.chat.model.*;
 import lukianov.andrei.chat.services.ClientMessageService;
 import lukianov.andrei.chat.services.impl.RoomServiceImpl;
+import lukianov.andrei.chat.services.impl.UserServiceImpl;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -31,6 +29,8 @@ public class RoomController {
     private final SimpMessageSendingOperations messagingTemplate;
 
     private final ClientMessageService clientMessageService;
+
+    private final UserServiceImpl userService;
 
     /*@MessageMapping("/chat.sendMessage")
     @SendTo("/topic/room")
@@ -57,6 +57,12 @@ public class RoomController {
         }
         return new Message(user, "");
     }*/
+
+    @MessageMapping("/chat.connect")
+    @SendToUser("/queue/reply/rooms")
+    public List<Room> connectMessage(@Payload ClientMessage clientMessage) {
+        return userService.getUserByLogin(clientMessage.getUsername()).getRooms();
+    }
 
     @MessageMapping("/chat.general")
     @SendToUser("/queue/reply")
