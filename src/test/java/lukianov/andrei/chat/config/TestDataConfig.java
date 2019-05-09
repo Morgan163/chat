@@ -1,3 +1,4 @@
+/*
 package lukianov.andrei.chat.config;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
@@ -73,3 +74,4 @@ public class TestDataConfig {
         return properties;
     }
 }
+*/
