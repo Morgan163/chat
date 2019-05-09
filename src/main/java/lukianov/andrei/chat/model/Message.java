@@ -36,7 +36,9 @@ public class Message implements Serializable {
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
+    @Transient
     private MessageType messageType;
+    @Transient
     private User messageAbout;
 
     public Message(User owner, String text) {

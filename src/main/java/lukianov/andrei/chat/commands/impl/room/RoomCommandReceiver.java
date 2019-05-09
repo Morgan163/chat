@@ -51,8 +51,13 @@ class RoomCommandReceiver {
         Room room = new Room();
         room.setName(roomName);
         room.setOwner(userParameter);
-        return createMessage(roomService.addRoom(room), userParameter, String.format("room %s was created", roomName),
-                null, MessageType.CREATE);
+        room = roomService.addRoom(room);
+        UserInRoom userInRoom = new UserInRoom();
+        userInRoom.setRoom(room);
+        userInRoom.setUser(userParameter);
+        userInRoomService.addUserInRoom(userInRoom);
+        return createMessage(room, userParameter, String.format("room %s was created", roomName),
+                userParameter, MessageType.CREATE);
     }
 
     private Message createPrivateRoom(String roomName) {
@@ -60,8 +65,13 @@ class RoomCommandReceiver {
         room.setName(roomName);
         room.setOwner(userParameter);
         room.setPrivate(true);
-        return createMessage(roomService.addRoom(room), userParameter, String.format("room %s was created", roomName),
-                null, MessageType.CREATE);
+        room = roomService.addRoom(room);
+        UserInRoom userInRoom = new UserInRoom();
+        userInRoom.setRoom(room);
+        userInRoom.setUser(userParameter);
+        userInRoomService.addUserInRoom(userInRoom);
+        return createMessage(room, userParameter, String.format("room %s was created", roomName),
+                userParameter, MessageType.CREATE);
     }
 
     Message removeRoom() throws RoomCommandExecutionException {
@@ -79,7 +89,7 @@ class RoomCommandReceiver {
         }
         roomService.delete(room);
         return createMessage(room, userParameter, String.format("room %s was deleted", roomName),
-                null, MessageType.REMOVE);
+                userParameter, MessageType.REMOVE);
     }
 
     Message connectToRoom() throws RoomCommandExecutionException {
@@ -104,7 +114,7 @@ class RoomCommandReceiver {
         userInRoom.setRoom(room);
         userInRoomService.addUserInRoom(userInRoom);
         return createMessage(room, userParameter, String.format("user %s was joined", userParameter.getLogin()),
-                null, MessageType.CONNECT);
+                userParameter, MessageType.CONNECT);
     }
 
     private Message connectToRoom(String roomName, String userLogin) throws RoomCommandExecutionException {
@@ -137,7 +147,7 @@ class RoomCommandReceiver {
             }
             userInRoomService.delete(userInRoom);
             return createMessage(roomParameter, userParameter, String.format("user %s was disconnected",
-                    userParameter.getLogin()), null, MessageType.DISCONNECT);
+                    userParameter.getLogin()), userParameter, MessageType.DISCONNECT);
         }
         throw new RoomCommandExecutionException("Command is not correct");
     }
@@ -178,7 +188,7 @@ class RoomCommandReceiver {
 
     private Message createMessage(Room room, User user, String text, User messageAbout, MessageType messageType) {
         Message message = new Message();
-        message.setRoom(roomService.addRoom(room));
+        message.setRoom(room);
         message.setOwner(user);
         message.setDate(new Date());
         message.setText(text);

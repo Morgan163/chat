@@ -6,10 +6,12 @@ import lukianov.andrei.chat.model.User;
 import lukianov.andrei.chat.model.UserInRoom;
 import lukianov.andrei.chat.repository.UserInRoomRepository;
 import lukianov.andrei.chat.services.UserInRoomService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Service
 public class UserInRoomServiceImpl implements UserInRoomService {
     private final UserInRoomRepository userInRoomRepository;
 

@@ -35,14 +35,14 @@ public class ClientMessageService {
             return performCommand(clientMessage);
         }
         Message message = new Message();
-        message.setOwner(userService.getUserByLogin(clientMessage.getUsername()));
+        message.setOwner(userService.getUserByLogin(clientMessage.getLogin()));
         message.setRoom(roomService.getRoomByName(clientMessage.getRoom()));
         message.setDate(new Date());
         return messageService.addMessage(message);
     }
 
     private Message performCommand(ClientMessage clientMessage) {
-        User user = userService.getUserByLogin(clientMessage.getUsername());
+        User user = userService.getUserByLogin(clientMessage.getLogin());
         Room room = roomService.getRoomByName(clientMessage.getRoom());
         RoomCommandClient roomCommandClient = new RoomCommandClient(clientMessage.getContent(),
                 user, room, roomService, userInRoomService, userService);

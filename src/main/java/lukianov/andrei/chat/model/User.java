@@ -1,5 +1,7 @@
 package lukianov.andrei.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Data
 @NoArgsConstructor
@@ -25,21 +29,34 @@ public class User implements Serializable {
     private String login;
 
     @Column(name = "password", nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
-    @JoinTable(name = "users_in_rooms",
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_in_room",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
-    private List<Room> rooms;
+    //@OneToMany(mappedBy = "user_id",  cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JsonBackReference
+    private List<Room> rooms = new ArrayList<>();
 
     public User(String login, String password, Role role) {
         this.login = login;
         this.password = password;
         this.role = role;
+    }
+
+    public void addRoom(Room room) {
+        if (!rooms.contains(room)) {
+            rooms.add(room);
+        }
+    }
+
+    public void removeRoom(Room room) {
+        rooms.remove(room);
     }
 }

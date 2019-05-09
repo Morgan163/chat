@@ -9,13 +9,11 @@ import lukianov.andrei.chat.services.impl.UserServiceImpl;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,7 +59,7 @@ public class RoomController {
     @MessageMapping("/chat.connect")
     @SendToUser("/queue/reply/rooms")
     public List<Room> connectMessage(@Payload ClientMessage clientMessage) {
-        return userService.getUserByLogin(clientMessage.getUsername()).getRooms();
+        return userService.getUserByLogin(clientMessage.getLogin()).getRooms();
     }
 
     @MessageMapping("/chat.general")
@@ -73,9 +71,11 @@ public class RoomController {
     @MessageMapping("/chat/{roomName}/sendMessage")
     public void sendMessage(@DestinationVariable String roomName, @Payload ClientMessage clientMessage) {
         Message message = clientMessageService.createMessage(clientMessage);
-        if (message.getMessageType().equals(MessageType.CONNECT) && Objects.nonNull(message.getMessageAbout())) {
-            messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), "/queue/reply",
-                    message);
+        if ((message.getMessageType().equals(MessageType.CONNECT) || message.getMessageType().equals(MessageType.CREATE)
+                || message.getMessageType().equals(MessageType.DISCONNECT))
+                && Objects.nonNull(message.getMessageAbout())) {
+            messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), "/queue/reply/rooms",
+                    message.getMessageAbout().getRooms());
         }
         messagingTemplate.convertAndSend("/topic/" + roomName, message);
     }

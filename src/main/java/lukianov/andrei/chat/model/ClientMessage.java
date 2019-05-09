@@ -6,7 +6,7 @@ import lombok.Data;
 public class ClientMessage {
     private final String content;
 
-    private final String username;
+    private final String login;
 
     private final String room;
 }

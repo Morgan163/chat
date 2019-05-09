@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,19 +25,40 @@ public class Room implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", nullable = false)
+    @JsonManagedReference
     private User owner;
 
-    @ManyToMany
-    @JoinTable(name = "users_in_rooms",
+    @ManyToMany( fetch = FetchType.EAGER)
+    @JoinTable(name = "users_in_room",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users;
+    //@OneToMany(mappedBy = "id", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private Set<User> users = new HashSet<>();
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<Message> messages;
+    @OneToMany(mappedBy = "room", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    private List<Message> messages = new ArrayList<>();
 
     @Column(name = "is_private", nullable = false)
     private boolean isPrivate;
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
+    }
+
+    public void addMessage(Message message) {
+        if (!messages.contains(message)) {
+            messages.add(message);
+        }
+    }
+
+    public void removeMessage(Message message) {
+        messages.remove(message);
+    }
 }
