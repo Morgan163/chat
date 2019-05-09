@@ -33,14 +33,11 @@ function connect() {
 
 function onConnected() {
     stompClient.subscribe('/topic/room', onMessageReceived);
-    stompClient.subscribe('/user/queue/reply/rooms', onRoomsReceived);
+    stompClient.subscribe('/user/queue/reply', onRoomsReceived);
     var clientMessage = {
         content: "",
         login: username,
         room: ""
-    }
-    var user = {
-        login: username
     };
     stompClient.send("/app/chat.connect",
         {},
@@ -65,12 +62,13 @@ function onRoomsReceived(payload) {
             var span = document.createElement('span');
             span.classList.add('title');
             span.classList.add('small');
-            span.appendChild(document.createTextNode(item.name));
+            span.innerText = item.name;
             li.appendChild(span);
             rooms.appendChild(li);
         })
     }
 }
+
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
@@ -125,21 +123,34 @@ function sendMessage(event) {
             event.preventDefault();
             return;
         }
-        var currentUser = {
-            name: username
+        //SonarLint warning not understandable
+        var clientMessageToRoom = {
+            content: messageText,
+            login: username,
+            room: roomName
         };
-        var message = {
-            owner: currentUser,
-            text: messageText
-        }
-        stompClient.send("/app/chat.senMessage",
+        stompClient.send("/topic/${roomName}/sendMessage}",
             {},
-            JSON.stringify(message)
-        )
+            JSON.stringify(clientMessageToRoom)
+        );
         messageField.value = '';
     }
     event.preventDefault();
 }
 
+rooms.onclick = function (event) {
+    var target = event.target;
+    console.log(target);
+    while (target != rooms) {
+        if (target.tagName == 'SPAN') {
+            console.log(target);
+            roomName = target.innerText;
+            document.querySelector('#roomName').value = roomName;
+            stompClient.subscribe('/topic/${roomName}', onMessageReceived);
+            return;
+        }
+        target = target.parentNode;
+    }
+}
 messageForm.addEventListener('submit', sendMessage, true);
 connect();

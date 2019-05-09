@@ -2,7 +2,6 @@ package lukianov.andrei.chat.config;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +16,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -28,7 +26,7 @@ import java.util.Properties;
 @EnableJpaRepositories("lukianov.andrei.chat.repository")
 public class DataConfig {
     private static final String PROP_DATABASE_DRIVER = "db.driver";
-    private static final String PROP_DATABASE_PASSWORD = "db.password";
+    private static final String PROP_DATABASE_PASS = "db.password";
     private static final String PROP_DATABASE_URL = "db.url";
     private static final String PROP_DATABASE_USERNAME = "db.username";
     private static final String PROP_HIBERNATE_DIALECT = "hibernate.dialect";
@@ -47,7 +45,7 @@ public class DataConfig {
         dataSource.setDriverClassName(environment.getRequiredProperty(PROP_DATABASE_DRIVER));
         dataSource.setUrl(environment.getRequiredProperty(PROP_DATABASE_URL));
         dataSource.setUsername(environment.getRequiredProperty(PROP_DATABASE_USERNAME));
-        dataSource.setPassword(environment.getRequiredProperty(PROP_DATABASE_PASSWORD));
+        dataSource.setPassword(environment.getRequiredProperty(PROP_DATABASE_PASS));
 
         return dataSource;
     }

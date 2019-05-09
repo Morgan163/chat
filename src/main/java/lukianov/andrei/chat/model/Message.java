@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public class Message implements Serializable {
     @Column(name = "id", nullable = false)
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
@@ -32,7 +34,7 @@ public class Message implements Serializable {
     @Column(name = "date")
     private Date date;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 

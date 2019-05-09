@@ -95,11 +95,11 @@ class RoomCommandReceiver {
     Message connectToRoom() throws RoomCommandExecutionException {
         Matcher matcher = Pattern.compile(CONNECT_USER_TO_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
-            return connectToRoom(matcher.group(1));
+            return connectToRoom(matcher.group(1), matcher.group(2));
         }
         matcher = Pattern.compile(CONNECT_TO_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
-            return connectToRoom(matcher.group(1), matcher.group(2));
+            return connectToRoom(matcher.group(1));
         }
         throw new RoomCommandExecutionException("Room name or userParameter login not specify");
     }

@@ -6,4 +6,7 @@ public class TextCommands {
     public static final String ROOM_CONNECT = "//room connect";
     public static final String ROOM_DISCONNECT = "//room disconnect";
     public static final String ROOM_RENAME = "//room rename";
+
+    private TextCommands() {
+    }
 }

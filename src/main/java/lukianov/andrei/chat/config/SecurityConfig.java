@@ -33,13 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-      /*  http.formLogin()
-                .loginPage("/login")
-                .loginProcessingUrl("/chat")
-                .failureUrl("/login?error")
-                .usernameParameter("login")
-                .passwordParameter("password")
-                .permitAll();*/
+
         http.authorizeRequests()
                 .antMatchers("/login")
                 .permitAll()
