@@ -80,12 +80,12 @@ public class RoomController {
 
     @MessageMapping("/chat/{roomName}/addUser")
     public void addUser(@DestinationVariable String roomName, @Payload ClientMessage clientMessage, SimpMessageHeaderAccessor headerAccessor) {
-        Message message = clientMessageService.handleMessage(clientMessage);
+        Message message = clientMessageService.messageWhenOpenRoom(clientMessage);
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("user", message.getOwner());
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("room", message.getRoom());
-        messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), QUEUE_REPLY,
+        messagingTemplate.convertAndSendToUser(message.getOwner().getLogin(), QUEUE_REPLY,
                 message.getRoom().getMessages());
-        messagingTemplate.convertAndSend("/topic/" + roomName, message);
+        //messagingTemplate.convertAndSend("/topic/" + roomName, message);
     }
 
 

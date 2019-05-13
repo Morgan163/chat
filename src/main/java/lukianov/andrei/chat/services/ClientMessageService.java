@@ -62,11 +62,19 @@ public class ClientMessageService {
         }
     }
 
-    public Message messageWhenConnected(ClientMessage clientMessage){
+    public Message messageWhenConnected(ClientMessage clientMessage) {
         User user = userService.getUserByLogin(clientMessage.getLogin());
         Message message = new Message();
         message.setOwner(user);
         message.setMessageAbout(user);
+        return message;
+    }
+
+    public Message messageWhenOpenRoom(ClientMessage clientMessage) {
+        Message message = messageWhenConnected(clientMessage);
+        Room room = roomService.getRoomByName(clientMessage.getRoom());
+        message.setRoom(room);
+        message.setMessageType(MessageType.MESSAGE);
         return message;
     }
 }

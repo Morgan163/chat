@@ -54,6 +54,10 @@ function onError(error) {
 
 function onCommandReceived(payload) {
     var message = JSON.parse(payload.body);
+    if (Array.isArray((message))) {
+        onMessageReceived(payload);
+        return;
+    }
     var rooms = message.messageAbout.rooms;
     onRoomsReceived(rooms);
 }
@@ -159,6 +163,11 @@ rooms.onclick = function (event) {
     console.log(target);
     while (target != rooms) {
         if (target.tagName == 'SPAN') {
+            if (roomName !== target.innerText) {
+                while (chat.firstChild) {
+                    chat.removeChild(chat.firstChild);
+                }
+            }
             console.log(target);
             roomName = target.innerText;
             document.querySelector('#roomName').value = roomName;
@@ -166,6 +175,15 @@ rooms.onclick = function (event) {
                 subscribe.unsubscribe();
             }
             subscribe = stompClient.subscribe('/topic/' + roomName, onMessageReceived);
+            var clientMessageToRoom = {
+                content: "",
+                login: username,
+                room: roomName
+            };
+            stompClient.send('/app/chat/' + roomName + '/addUser',
+                {},
+                JSON.stringify(clientMessageToRoom)
+            );
             return;
         }
         target = target.parentNode;
