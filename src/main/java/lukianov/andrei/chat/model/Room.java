@@ -25,7 +25,7 @@ public class Room implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", nullable = false)
     @JsonManagedReference
     private User owner;

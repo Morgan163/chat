@@ -3,6 +3,8 @@ var rooms = document.querySelector('#rooms');
 var chatTable = document.querySelector('#chat-table');
 var messageField = document.querySelector('#message-field');
 var messageForm = document.querySelector('#messageForm');
+var commandForm = document.querySelector('#commandForm');
+var commandField = document.querySelector('#command-field');
 var stompClient = null;
 var username = null;
 var roomName = null;
@@ -32,8 +34,8 @@ function connect() {
 }
 
 function onConnected() {
-    stompClient.subscribe('/topic/room', onMessageReceived);
-    stompClient.subscribe('/user/queue/reply', onRoomsReceived);
+    //stompClient.subscribe('/topic/room', onMessageReceived);
+    stompClient.subscribe('/user/queue/reply', onCommadReceived);
     var clientMessage = {
         content: "",
         login: username,
@@ -49,8 +51,13 @@ function onError(error) {
 
 }
 
-function onRoomsReceived(payload) {
-    var roomsObject = JSON.parse(payload.body);
+function onCommandReceived(payload) {
+    var message = JSON.parse(payload.body);
+    var rooms = message.messageAbout.rooms;
+    onRoomsReceived(rooms);
+}
+
+function onRoomsReceived(roomsObject) {
     if (Array.isArray((roomsObject))) {
         while (rooms.firstChild) {
             rooms.removeChild(rooms.firstChild);
@@ -69,7 +76,6 @@ function onRoomsReceived(payload) {
     }
 }
 
-
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
     if (Array.isArray(message)) {
@@ -80,6 +86,7 @@ function onMessageReceived(payload) {
         writeMessage(message);
     }
 }
+
 
 function writeMessage(message) {
     if (message.messageString == "") {
@@ -107,29 +114,34 @@ function writeMessage(message) {
     chat.scrollTop = chat.scrollHeight;
 }
 
+function sendCommand(event) {
+    var commandText = commandField.value;
+    if (commandText != "") {
+        var clientMessage = {
+            content: commandText,
+            login: username,
+            room: ""
+        };
+        stompClient.send("/app/chat.command",
+            {},
+            JSON.stringify(clientMessage)
+        );
+        event.preventDefault();
+        return;
+    }
+    event.preventDefault();
+}
+
 function sendMessage(event) {
     var messageText = messageField.value;
-    if (messageText != "") {
-        if (roomName == null) {
-            var clientMessage = {
-                content: messageText,
-                login: username,
-                room: ""
-            };
-            stompClient.send("/app/chat.general",
-                {},
-                JSON.stringify(clientMessage)
-            );
-            event.preventDefault();
-            return;
-        }
+    if ((messageText != "") && (roomName != null)) {
         //SonarLint warning not understandable
         var clientMessageToRoom = {
             content: messageText,
             login: username,
             room: roomName
         };
-        stompClient.send("/topic/${roomName}/sendMessage}",
+        stompClient.send('app/chat/' + roomName + '/sendMessage}',
             {},
             JSON.stringify(clientMessageToRoom)
         );
@@ -146,7 +158,7 @@ rooms.onclick = function (event) {
             console.log(target);
             roomName = target.innerText;
             document.querySelector('#roomName').value = roomName;
-            stompClient.subscribe('/topic/${roomName}', onMessageReceived);
+            stompClient.subscribe('/topic/' + roomName, onMessageReceived);
             return;
         }
         target = target.parentNode;
