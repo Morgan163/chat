@@ -8,6 +8,7 @@ var commandField = document.querySelector('#command-field');
 var stompClient = null;
 var username = null;
 var roomName = null;
+var subscribe = null;
 var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
@@ -35,7 +36,7 @@ function connect() {
 
 function onConnected() {
     //stompClient.subscribe('/topic/room', onMessageReceived);
-    stompClient.subscribe('/user/queue/reply', onCommadReceived);
+    stompClient.subscribe('/user/queue/reply', onCommandReceived);
     var clientMessage = {
         content: "",
         login: username,
@@ -92,7 +93,7 @@ function writeMessage(message) {
     if (message.messageString == "") {
         return;
     }
-    var date = new Date(message.messageDate);
+    var date = new Date(message.date);
     var li = document.createElement('li');
     li.classList.add('collection-item');
     li.classList.add('avatar');
@@ -101,12 +102,14 @@ function writeMessage(message) {
     span.classList.add('title');
     span.classList.add('small');
     var p = document.createElement('h5');
-    p.appendChild(document.createTextNode(message.messageString));
-    if (message.user.name == username) {
-        span.appendChild(document.createTextNode(date.toLocaleString("ru", options) + " " + message.user.name));
+    p.appendChild(document.createTextNode(message.text));
+    if (message.owner.login == username) {
+        span.appendChild(document.createTextNode(date.toLocaleString("ru", options) + " "
+            + message.owner.login));
         li.classList.add('right-align');
     } else {
-        span.appendChild(document.createTextNode(message.user.name + " " + date.toLocaleString("ru", options)));
+        span.appendChild(document.createTextNode(message.owner.login + " "
+            + date.toLocaleString("ru", options)));
     }
     li.appendChild(span);
     li.appendChild(p);
@@ -126,6 +129,7 @@ function sendCommand(event) {
             {},
             JSON.stringify(clientMessage)
         );
+        commandField.value = '';
         event.preventDefault();
         return;
     }
@@ -141,7 +145,7 @@ function sendMessage(event) {
             login: username,
             room: roomName
         };
-        stompClient.send('app/chat/' + roomName + '/sendMessage}',
+        stompClient.send('/app/chat/' + roomName + '/sendMessage',
             {},
             JSON.stringify(clientMessageToRoom)
         );
@@ -158,11 +162,15 @@ rooms.onclick = function (event) {
             console.log(target);
             roomName = target.innerText;
             document.querySelector('#roomName').value = roomName;
-            stompClient.subscribe('/topic/' + roomName, onMessageReceived);
+            if (subscribe) {
+                subscribe.unsubscribe();
+            }
+            subscribe = stompClient.subscribe('/topic/' + roomName, onMessageReceived);
             return;
         }
         target = target.parentNode;
     }
 }
 messageForm.addEventListener('submit', sendMessage, true);
+commandForm.addEventListener('submit', sendCommand, true);
 connect();

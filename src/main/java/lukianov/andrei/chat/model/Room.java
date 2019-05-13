@@ -1,5 +1,6 @@
 package lukianov.andrei.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class Room implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "owner_id", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference
     private User owner;
 
     @ManyToMany( fetch = FetchType.EAGER)
@@ -35,10 +36,11 @@ public class Room implements Serializable {
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     //@OneToMany(mappedBy = "id", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonBackReference
     private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "room", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Message> messages = new ArrayList<>();
 
     @Column(name = "is_private", nullable = false)

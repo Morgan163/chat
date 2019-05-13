@@ -2,6 +2,7 @@ package lukianov.andrei.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,7 +42,7 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
     //@OneToMany(mappedBy = "user_id",  cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
-    @JsonBackReference
+    @JsonManagedReference
     private List<Room> rooms = new ArrayList<>();
 
     public User(String login, String password, Role role) {

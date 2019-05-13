@@ -14,13 +14,13 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
 @Slf4j
 @Controller
 public class RoomController {
+    public static final String QUEUE_REPLY = "/queue/reply";
 
     private final RoomServiceImpl roomServiceImpl;
 
@@ -33,34 +33,57 @@ public class RoomController {
 
     @MessageMapping("/chat.connect")
     @SendToUser("/queue/reply")
-    public List<Room> connectMessage(@Payload ClientMessage clientMessage) {
-        return userService.getUserByLogin(clientMessage.getLogin()).getRooms();
+    public Message connectMessage(@Payload ClientMessage clientMessage) {
+        return clientMessageService.messageWhenConnected(clientMessage);
     }
 
-    @MessageMapping("/chat.general")
-    @SendToUser("/queue/reply")
-    public Message generalMessage(@Payload ClientMessage clientMessage, SimpMessageHeaderAccessor headerAccessor) {
-        return clientMessageService.createMessage(clientMessage);
+    @MessageMapping("/chat.command")
+    public void commandMessage(@Payload ClientMessage clientMessage) {
+        Message message = clientMessageService.handleCommand(clientMessage);
+        if (message.getMessageType().equals(MessageType.CONNECT) ||
+                message.getMessageType().equals(MessageType.DISCONNECT)) {
+            sendConnectOrCreate(message);
+        } else if (message.getMessageType().equals(MessageType.REMOVE) ||
+                message.getMessageType().equals(MessageType.RENAME)) {
+            sendRemoveOrRename(message);
+        } else if (message.getMessageType().equals(MessageType.CREATE)) {
+            sendMessageToUserAbout(message);
+        }
     }
+
+    private void sendConnectOrCreate(Message message) {
+        sendMessageToUserAbout(message);
+        if (!message.getOwner().equals(message.getMessageAbout())) {
+            message.setMessageAbout(message.getOwner());
+            sendMessageToUserAbout(message);
+        }
+    }
+
+    private void sendRemoveOrRename(Message message) {
+        for (User user : message.getRoom().getUsers()) {
+            message.setMessageAbout(user);
+            sendMessageToUserAbout(message);
+        }
+    }
+
+    private void sendMessageToUserAbout(Message message) {
+        messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), QUEUE_REPLY,
+                message);
+    }
+
 
     @MessageMapping("/chat/{roomName}/sendMessage")
-    public void sendMessage(@DestinationVariable String roomName, @Payload ClientMessage clientMessage) {
-        Message message = clientMessageService.createMessage(clientMessage);
-        if ((message.getMessageType().equals(MessageType.CONNECT) || message.getMessageType().equals(MessageType.CREATE)
-                || message.getMessageType().equals(MessageType.DISCONNECT))
-                && Objects.nonNull(message.getMessageAbout())) {
-            messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), "/queue/reply/rooms",
-                    message.getMessageAbout().getRooms());
-        }
+    public void sendMessage(@DestinationVariable("roomName") String roomName, @Payload ClientMessage clientMessage) {
+        Message message = clientMessageService.handleMessage(clientMessage);
         messagingTemplate.convertAndSend("/topic/" + roomName, message);
     }
 
     @MessageMapping("/chat/{roomName}/addUser")
     public void addUser(@DestinationVariable String roomName, @Payload ClientMessage clientMessage, SimpMessageHeaderAccessor headerAccessor) {
-        Message message = clientMessageService.createMessage(clientMessage);
+        Message message = clientMessageService.handleMessage(clientMessage);
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("user", message.getOwner());
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("room", message.getRoom());
-        messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), "/queue/reply",
+        messagingTemplate.convertAndSendToUser(message.getMessageAbout().getLogin(), QUEUE_REPLY,
                 message.getRoom().getMessages());
         messagingTemplate.convertAndSend("/topic/" + roomName, message);
     }

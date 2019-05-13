@@ -29,19 +29,21 @@ public class ClientMessageService {
     private final UserInRoomServiceImpl userInRoomService;
 
 
-    public Message createMessage(ClientMessage clientMessage) {
-        String messageContent = clientMessage.getContent();
-        if (messageContent.startsWith("//")) {
-            return performCommand(clientMessage);
-        }
+    public Message handleMessage(ClientMessage clientMessage) {
         Message message = new Message();
         message.setOwner(userService.getUserByLogin(clientMessage.getLogin()));
         message.setRoom(roomService.getRoomByName(clientMessage.getRoom()));
         message.setDate(new Date());
+        message.setText(clientMessage.getContent());
         return messageService.addMessage(message);
     }
 
-    private Message performCommand(ClientMessage clientMessage) {
+    public Message handleCommand(ClientMessage clientMessage) {
+        String messageContent = clientMessage.getContent();
+        if (!messageContent.startsWith("//")) {
+            //TODO обработать ошибку
+            return new Message();
+        }
         User user = userService.getUserByLogin(clientMessage.getLogin());
         Room room = roomService.getRoomByName(clientMessage.getRoom());
         RoomCommandClient roomCommandClient = new RoomCommandClient(clientMessage.getContent(),
@@ -58,5 +60,13 @@ public class ClientMessageService {
             message.setMessageType(MessageType.ERROR);
             return message;
         }
+    }
+
+    public Message messageWhenConnected(ClientMessage clientMessage){
+        User user = userService.getUserByLogin(clientMessage.getLogin());
+        Message message = new Message();
+        message.setOwner(user);
+        message.setMessageAbout(user);
+        return message;
     }
 }

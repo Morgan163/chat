@@ -183,7 +183,7 @@ class RoomCommandReceiver {
     private Message rename(String roomName) {
         roomParameter.setName(roomName);
         return createMessage(roomParameter, userParameter, String.format("user %s renamed room to %s",
-                userParameter.getLogin(), roomName), null, MessageType.RENAME);
+                userParameter.getLogin(), roomName), userParameter, MessageType.RENAME);
     }
 
     private Message createMessage(Room room, User user, String text, User messageAbout, MessageType messageType) {
