@@ -78,6 +78,7 @@ function onRoomsReceived(roomsObject) {
             li.appendChild(span);
             rooms.appendChild(li);
         })
+        rooms.update
     }
 }
 
@@ -127,7 +128,7 @@ function sendCommand(event) {
         var clientMessage = {
             content: commandText,
             login: username,
-            room: ""
+            room: roomName
         };
         stompClient.send("/app/chat.command",
             {},

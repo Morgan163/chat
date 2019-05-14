@@ -25,6 +25,7 @@ class RoomCommandReceiver {
             + "\\s-l" + SPACE_AND_WORD_REGEXP;
     private static final String DISCONNECT_USER_FROM_ROOM_REGEXP = TextCommands.ROOM_DISCONNECT + "\\s-l"
             + SPACE_AND_WORD_REGEXP;
+    private static final String DISCONNECT_FROM_ROOM_REGEXP = TextCommands.ROOM_DISCONNECT;
     private static final String RENAME_ROOM_REGEXP = TextCommands.ROOM_RENAME + SPACE_AND_WORD_REGEXP;
 
 
@@ -56,8 +57,9 @@ class RoomCommandReceiver {
         userInRoom.setRoom(room);
         userInRoom.setUser(userParameter);
         userInRoomService.addUserInRoom(userInRoom);
-        return createMessage(room, userParameter, String.format("room %s was created", roomName),
-                userParameter, MessageType.CREATE);
+        User updatedUser = userService.getUserByLogin(userParameter.getLogin());
+        return createMessage(room, updatedUser, String.format("room %s was created", roomName),
+                updatedUser, MessageType.CREATE);
     }
 
     private Message createPrivateRoom(String roomName) {
@@ -70,8 +72,9 @@ class RoomCommandReceiver {
         userInRoom.setRoom(room);
         userInRoom.setUser(userParameter);
         userInRoomService.addUserInRoom(userInRoom);
-        return createMessage(room, userParameter, String.format("room %s was created", roomName),
-                userParameter, MessageType.CREATE);
+        User updatedUser = userService.getUserByLogin(userParameter.getLogin());
+        return createMessage(room, updatedUser, String.format("room %s was created", roomName),
+                updatedUser, MessageType.CREATE);
     }
 
     Message removeRoom() throws RoomCommandExecutionException {
@@ -88,8 +91,9 @@ class RoomCommandReceiver {
             throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
         roomService.delete(room);
-        return createMessage(room, userParameter, String.format("room %s was deleted", roomName),
-                userParameter, MessageType.REMOVE);
+        User updatedUser = userService.getUserByLogin(userParameter.getLogin());
+        return createMessage(room, updatedUser, String.format("room %s was deleted", roomName),
+                updatedUser, MessageType.REMOVE);
     }
 
     Message connectToRoom() throws RoomCommandExecutionException {
@@ -113,8 +117,9 @@ class RoomCommandReceiver {
         userInRoom.setUser(userParameter);
         userInRoom.setRoom(room);
         userInRoomService.addUserInRoom(userInRoom);
-        return createMessage(room, userParameter, String.format("user %s was joined", userParameter.getLogin()),
-                userParameter, MessageType.CONNECT);
+        User updatedUser = userService.getUserByLogin(userParameter.getLogin());
+        return createMessage(room, updatedUser, String.format("user %s was joined", userParameter.getLogin()),
+                updatedUser, MessageType.CONNECT);
     }
 
     private Message connectToRoom(String roomName, String userLogin) throws RoomCommandExecutionException {
@@ -130,6 +135,7 @@ class RoomCommandReceiver {
         userInRoom.setUser(specifiedUser);
         userInRoom.setRoom(room);
         userInRoomService.addUserInRoom(userInRoom);
+        specifiedUser = userService.getUserByLogin(specifiedUser.getLogin());
         return createMessage(room, specifiedUser, String.format("user %s was joined", specifiedUser.getLogin()),
                 specifiedUser, MessageType.CONNECT);
     }
@@ -139,15 +145,16 @@ class RoomCommandReceiver {
         if (matcher.find()) {
             return disconnect(matcher.group(1));
         }
-        matcher = Pattern.compile(CONNECT_TO_ROOM_REGEXP).matcher(command);
+        matcher = Pattern.compile(DISCONNECT_FROM_ROOM_REGEXP).matcher(command);
         if (matcher.find()) {
             UserInRoom userInRoom = userInRoomService.findByUserAndRoom(userParameter, roomParameter);
             if (Objects.isNull(userInRoom)) {
-                throw new RoomCommandExecutionException("User is not in this roomParameter");
+                throw new RoomCommandExecutionException("User is not in this room");
             }
             userInRoomService.delete(userInRoom);
-            return createMessage(roomParameter, userParameter, String.format("user %s was disconnected",
-                    userParameter.getLogin()), userParameter, MessageType.DISCONNECT);
+            User updatedUser = userService.getUserByLogin(userParameter.getLogin());
+            return createMessage(roomParameter, updatedUser, String.format("user %s was disconnected",
+                    userParameter.getLogin()), updatedUser, MessageType.DISCONNECT);
         }
         throw new RoomCommandExecutionException("Command is not correct");
     }
@@ -163,6 +170,7 @@ class RoomCommandReceiver {
                 throw new RoomCommandExecutionException("User is not in this roomParameter");
             }
             userInRoomService.delete(userInRoom);
+            specifiedUser = userService.getUserByLogin(specifiedUser.getLogin());
             return createMessage(roomParameter, userParameter, String.format("user %s was disconnected",
                     specifiedUser.getLogin()), specifiedUser, MessageType.DISCONNECT);
         }
@@ -182,8 +190,10 @@ class RoomCommandReceiver {
 
     private Message rename(String roomName) {
         roomParameter.setName(roomName);
-        return createMessage(roomParameter, userParameter, String.format("user %s renamed room to %s",
-                userParameter.getLogin(), roomName), userParameter, MessageType.RENAME);
+        Room updatedRoom = roomService.editRoom(roomParameter);
+        User updatedUser = userService.getUserByLogin(userParameter.getLogin());
+        return createMessage(updatedRoom, updatedUser, String.format("user %s renamed room to %s",
+                userParameter.getLogin(), roomName), updatedUser, MessageType.RENAME);
     }
 
     private Message createMessage(Room room, User user, String text, User messageAbout, MessageType messageType) {

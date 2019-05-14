@@ -2,9 +2,7 @@ package lukianov.andrei.chat.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -37,10 +35,14 @@ public class Room implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     //@OneToMany(mappedBy = "id", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JsonBackReference
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Set<User> users = new HashSet<>();
 
     @OneToMany(mappedBy = "room", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JsonBackReference
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Message> messages = new ArrayList<>();
 
     @Column(name = "is_private", nullable = false)

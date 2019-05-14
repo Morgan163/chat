@@ -3,15 +3,15 @@ package lukianov.andrei.chat.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -43,7 +43,9 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "room_id"))
     //@OneToMany(mappedBy = "user_id",  cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JsonManagedReference
-    private List<Room> rooms = new ArrayList<>();
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Room> rooms = new HashSet<>();
 
     public User(String login, String password, Role role) {
         this.login = login;
@@ -52,9 +54,7 @@ public class User implements Serializable {
     }
 
     public void addRoom(Room room) {
-        if (!rooms.contains(room)) {
-            rooms.add(room);
-        }
+        rooms.add(room);
     }
 
     public void removeRoom(Room room) {
