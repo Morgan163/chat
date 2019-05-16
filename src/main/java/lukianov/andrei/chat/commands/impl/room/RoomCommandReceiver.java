@@ -90,6 +90,7 @@ class RoomCommandReceiver {
         if (Objects.isNull(room)) {
             throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
+
         roomService.delete(room);
         User updatedUser = userService.getUserByLogin(userParameter.getLogin());
         return createMessage(room, updatedUser, String.format("room %s was deleted", roomName),

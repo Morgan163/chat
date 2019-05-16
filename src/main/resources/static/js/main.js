@@ -58,6 +58,10 @@ function onCommandReceived(payload) {
         onMessageReceived(payload);
         return;
     }
+    if(message.messageType === 'ERROR'){
+        alert(message.text);
+        return;
+    }
     var rooms = message.messageAbout.rooms;
     onRoomsReceived(rooms);
 }

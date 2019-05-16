@@ -40,11 +40,10 @@ public class ClientMessageService {
 
     public Message handleCommand(ClientMessage clientMessage) {
         String messageContent = clientMessage.getContent();
-        if (!messageContent.startsWith("//")) {
-            //TODO обработать ошибку
-            return new Message();
-        }
         User user = userService.getUserByLogin(clientMessage.getLogin());
+        if (!messageContent.startsWith("//")) {
+            return createErrorMessage(user, "Command not contains '//'");
+        }
         Room room = roomService.getRoomByName(clientMessage.getRoom());
         RoomCommandClient roomCommandClient = new RoomCommandClient(clientMessage.getContent(),
                 user, room, roomService, userInRoomService, userService);
@@ -52,14 +51,18 @@ public class ClientMessageService {
         try {
             return roomCommandExecutor.executeCommand(roomCommandClient.resolveRoomCommand());
         } catch (RoomCommandExecutionException ex) {
-            Message message = new Message();
-            message.setOwner(user);
-            message.setDate(new Date());
-            log.error(ex.getMessage());
-            message.setText("ERROR " + ex.getMessage());
-            message.setMessageType(MessageType.ERROR);
-            return message;
+            return createErrorMessage(user, ex.getMessage());
         }
+    }
+    private Message createErrorMessage(User user, String text){
+        log.error(text);
+        Message message = new Message();
+        message.setOwner(user);
+        message.setDate(new Date());
+        message.setText("ERROR " + text);
+        message.setMessageType(MessageType.ERROR);
+        message.setMessageAbout(user);
+        return message;
     }
 
     public Message messageWhenConnected(ClientMessage clientMessage) {

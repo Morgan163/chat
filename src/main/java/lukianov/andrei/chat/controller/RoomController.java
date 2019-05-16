@@ -40,13 +40,14 @@ public class RoomController {
     @MessageMapping("/chat.command")
     public void commandMessage(@Payload ClientMessage clientMessage) {
         Message message = clientMessageService.handleCommand(clientMessage);
-        if (message.getMessageType().equals(MessageType.CONNECT) ||
-                message.getMessageType().equals(MessageType.DISCONNECT)) {
+        if (message.getMessageType().equals(MessageType.CONNECT)
+                || message.getMessageType().equals(MessageType.DISCONNECT)) {
             sendConnectOrCreate(message);
-        } else if (message.getMessageType().equals(MessageType.REMOVE) ||
-                message.getMessageType().equals(MessageType.RENAME)) {
+        } else if (message.getMessageType().equals(MessageType.REMOVE)
+                || message.getMessageType().equals(MessageType.RENAME)) {
             sendRemoveOrRename(message);
-        } else if (message.getMessageType().equals(MessageType.CREATE)) {
+        } else if (message.getMessageType().equals(MessageType.CREATE)
+                || message.getMessageType().equals(MessageType.ERROR)) {
             sendMessageToUserAbout(message);
         }
     }
@@ -61,6 +62,7 @@ public class RoomController {
 
     private void sendRemoveOrRename(Message message) {
         for (User user : message.getRoom().getUsers()) {
+            boolean is = user.getRooms().remove(message.getRoom());
             message.setMessageAbout(user);
             sendMessageToUserAbout(message);
         }
