@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class WebSocketEventListener {
         if (Objects.nonNull(user) && Objects.nonNull(room)) {
             roomServiceImpl.deleteUserFromRoom(user);
             messagingTemplate.convertAndSend("/topic/" + room.getName(),
-                    new Message(user, String.format("%s leaved", user.getLogin()), new Date()));
+                    new Message(user, String.format("%s leaved", user.getLogin()), LocalDateTime.now()));
         }
     }
 

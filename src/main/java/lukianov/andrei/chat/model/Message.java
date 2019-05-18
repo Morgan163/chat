@@ -1,6 +1,5 @@
 package lukianov.andrei.chat.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -32,7 +31,7 @@ public class Message implements Serializable {
     private String text;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDateTime date;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id", nullable = false)
@@ -49,7 +48,7 @@ public class Message implements Serializable {
         this.text = text;
     }
 
-    public Message(User owner, String text, Date date) {
+    public Message(User owner, String text, LocalDateTime date) {
         this.owner = owner;
         this.text = text;
         this.date = date;

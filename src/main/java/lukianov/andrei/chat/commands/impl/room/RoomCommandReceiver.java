@@ -8,6 +8,7 @@ import lukianov.andrei.chat.services.RoomService;
 import lukianov.andrei.chat.services.UserInRoomService;
 import lukianov.andrei.chat.services.UserService;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -201,7 +202,7 @@ class RoomCommandReceiver {
         Message message = new Message();
         message.setRoom(room);
         message.setOwner(user);
-        message.setDate(new Date());
+        message.setDate(LocalDateTime.now());
         message.setText(text);
         message.setMessageAbout(messageAbout);
         message.setMessageType(messageType);

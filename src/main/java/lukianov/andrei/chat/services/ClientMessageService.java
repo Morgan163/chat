@@ -12,7 +12,7 @@ import lukianov.andrei.chat.services.impl.UserInRoomServiceImpl;
 import lukianov.andrei.chat.services.impl.UserServiceImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class ClientMessageService {
         Message message = new Message();
         message.setOwner(userService.getUserByLogin(clientMessage.getLogin()));
         message.setRoom(roomService.getRoomByName(clientMessage.getRoom()));
-        message.setDate(new Date());
+        message.setDate(LocalDateTime.now());
         message.setText(clientMessage.getContent());
         return messageService.addMessage(message);
     }
@@ -58,7 +58,7 @@ public class ClientMessageService {
         log.error(text);
         Message message = new Message();
         message.setOwner(user);
-        message.setDate(new Date());
+        message.setDate(LocalDateTime.now());
         message.setText("ERROR " + text);
         message.setMessageType(MessageType.ERROR);
         message.setMessageAbout(user);
