@@ -62,7 +62,7 @@ public class RoomController {
 
     private void sendRemoveOrRename(Message message) {
         for (User user : message.getRoom().getUsers()) {
-            boolean is = user.getRooms().remove(message.getRoom());
+            user.removeRoom(message.getRoom());
             message.setMessageAbout(user);
             sendMessageToUserAbout(message);
         }

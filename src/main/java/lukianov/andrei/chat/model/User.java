@@ -41,7 +41,6 @@ public class User implements Serializable {
     @JoinTable(name = "users_in_room",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
-    //@OneToMany(mappedBy = "user_id",  cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     @JsonManagedReference
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -58,6 +57,12 @@ public class User implements Serializable {
     }
 
     public void removeRoom(Room room) {
-        rooms.remove(room);
+        Set<Room> newRooms = new HashSet<>();
+        for (Room room1 : rooms) {
+            if (room1.getId() != room.getId()) {
+                newRooms.add(room1);
+            }
+        }
+        rooms = new HashSet<>(newRooms);
     }
 }
