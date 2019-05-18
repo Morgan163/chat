@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface UserInRoomRepository extends JpaRepository<UserInRoom, Long> {
-    UserInRoom findByUser(@Param("user") User user);
+    UserInRoom findByUser(User user);
 
-    UserInRoom findByUserAndRoom(@Param("user") User user, @Param("room") Room room);
+    UserInRoom findByUserAndRoom(User user, Room room);
 }
