@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "users_in_room")
+@Table(name = "users_in_rooms")
 public class UserInRoom {
     @Id
     @GeneratedValue(generator = "increment")

@@ -30,7 +30,7 @@ public class Room implements Serializable {
     private User owner;
 
     @ManyToMany( fetch = FetchType.EAGER)
-    @JoinTable(name = "users_in_room",
+    @JoinTable(name = "users_in_rooms",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     //@OneToMany(mappedBy = "id", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)

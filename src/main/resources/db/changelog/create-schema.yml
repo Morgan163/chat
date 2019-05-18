@@ -94,7 +94,7 @@ databaseChangeLog:
                     foreignKeyName: roomFK
                     references: room(id)
         - createTable:
-            tableName: users_in_room
+            tableName: users_in_rooms
             columns:
               - column:
                   name: id

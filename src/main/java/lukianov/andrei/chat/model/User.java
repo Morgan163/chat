@@ -38,7 +38,7 @@ public class User implements Serializable {
     private Role role;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_in_room",
+    @JoinTable(name = "users_in_rooms",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
     @JsonManagedReference
