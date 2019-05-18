@@ -8,8 +8,4 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @Configuration
 public class ChatConfig {
 
-    @Bean
-    public UserDetailsService getUserDetailsService(){
-        return new UserDetailsServiceImpl();
-    }
 }
