@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
