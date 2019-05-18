@@ -13,7 +13,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "room", schema = "public")
+@Table(name = "room")
 public class Room implements Serializable {
     @Id
     @GeneratedValue(generator = "increment")

@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user", schema = "public")
+@Table(name = "user")
 public class User implements Serializable {
     @Id
     @GeneratedValue(generator = "increment")

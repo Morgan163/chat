@@ -34,6 +34,7 @@ public class DataConfig {
     private static final String PROP_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
     private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
     private static final String PROP_LIQUIBASE_CHANGELOG = "spring.liquibase.change-log";
+    private static final String PROP_HIBERNATE_SCHEMA = "hibernate.default_schema";
 
     @Resource
     private Environment environment;
@@ -77,6 +78,7 @@ public class DataConfig {
         properties.put(PROP_HIBERNATE_DIALECT, environment.getRequiredProperty(PROP_HIBERNATE_DIALECT));
         properties.put(PROP_HIBERNATE_SHOW_SQL, environment.getRequiredProperty(PROP_HIBERNATE_SHOW_SQL));
         properties.put(PROP_HIBERNATE_HBM2DDL_AUTO, environment.getRequiredProperty(PROP_HIBERNATE_HBM2DDL_AUTO));
+        properties.put(PROP_HIBERNATE_SCHEMA, environment.getRequiredProperty(PROP_HIBERNATE_SCHEMA));
         return properties;
     }
 
