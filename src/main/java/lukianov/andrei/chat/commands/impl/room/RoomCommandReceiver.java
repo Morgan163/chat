@@ -9,7 +9,6 @@ import lukianov.andrei.chat.services.UserInRoomService;
 import lukianov.andrei.chat.services.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

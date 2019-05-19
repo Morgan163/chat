@@ -87,7 +87,6 @@ public class RoomController {
         Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("room", message.getRoom());
         messagingTemplate.convertAndSendToUser(message.getOwner().getLogin(), QUEUE_REPLY,
                 message.getRoom().getMessages());
-        //messagingTemplate.convertAndSend("/topic/" + roomName, message);
     }
 
 
