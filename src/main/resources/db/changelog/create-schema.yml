@@ -26,9 +26,6 @@ databaseChangeLog:
                   type: varchar(100)
                   constraints:
                     nullable: false
-              - column:
-                  name: role
-                  type: varchar(25)
 
         - createTable:
             tableName: room
@@ -117,6 +114,67 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: roomForUsersFK
                     references: room(id)
+              - column:
+                  name: role
+                  type: varchar(25)
+        - createTable:
+            tableName: black_list
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: ownerBlackListFK
+                    references: user(id)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: userBlackListFK
+                    references: user(id)
+        - createTable:
+            tableName: room_block_list
+            columns:
+              - column:
+                  name: id
+                  type: serial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: userInBlockFK
+                    references: user(id)
+              - column:
+                  name: room_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: roomInBlockFK
+                    references: room(id)
+              - column:
+                  name: action
+                  type: varchar(25)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+                  constraints:
+                    nullable: true
 
   - changeSet:
       id: insert3
@@ -131,9 +189,6 @@ databaseChangeLog:
               - column:
                   name: password
                   value: "$2a$10$uKpKE0RCGAelI3Y34kZJUOCVE9zbFlreqbR0HaVmeNT6G3kc7alfC"
-              - column:
-                  name: role
-                  value: "USER"
         - insert:
             tableName: user
             columns:
@@ -143,9 +198,6 @@ databaseChangeLog:
               - column:
                   name: password
                   value: "$2a$10$U81k/DToKP2e04aOauZZ5.r1co0vFAZBmU9WZWj5RyblHOtWwQFJe"
-              - column:
-                  name: role
-                  value: "MODERATOR"
         - insert:
             tableName: user
             columns:
@@ -155,9 +207,6 @@ databaseChangeLog:
               - column:
                   name: password
                   value: "$2a$10$SzxlgarBeaWg40HOaxW67OQkiVhYZI0XRwBBd6H6pEjsvbI4cw4n6"
-              - column:
-                  name: role
-                  value: "ADMINISTRATOR"
         #- sql:
          #   sql: insert into public.user (login, password, role) values ("test1", "test1", "USER")
         #- sql:

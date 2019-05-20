@@ -30,10 +30,6 @@ public class User implements Serializable {
     @JsonIgnore
     private String password;
 
-    @Column(name = "role", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_in_rooms",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -43,10 +39,9 @@ public class User implements Serializable {
     @ToString.Exclude
     private Set<Room> rooms = new HashSet<>();
 
-    public User(String login, String password, Role role) {
+    public User(String login, String password) {
         this.login = login;
         this.password = password;
-        this.role = role;
     }
 
     public void addRoom(Room room) {

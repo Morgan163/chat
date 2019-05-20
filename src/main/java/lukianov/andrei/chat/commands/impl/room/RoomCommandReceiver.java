@@ -49,13 +49,10 @@ class RoomCommandReceiver {
     }
 
     private Message createPublicRoom(String roomName) {
-        Room room = new Room();
-        room.setName(roomName);
-        room.setOwner(userParameter);
+        Room room = createRoomObject(roomName);
         room = roomService.addRoom(room);
-        UserInRoom userInRoom = new UserInRoom();
-        userInRoom.setRoom(room);
-        userInRoom.setUser(userParameter);
+        UserInRoom userInRoom = createUserInRoomObject(room);
+        userInRoom.setRole(Role.OWNER);
         userInRoomService.addUserInRoom(userInRoom);
         User updatedUser = userService.getUserByLogin(userParameter.getLogin());
         return createMessage(room, updatedUser, String.format("room %s was created", roomName),
@@ -63,18 +60,30 @@ class RoomCommandReceiver {
     }
 
     private Message createPrivateRoom(String roomName) {
-        Room room = new Room();
-        room.setName(roomName);
-        room.setOwner(userParameter);
+        Room room = createRoomObject(roomName);
         room.setPrivate(true);
         room = roomService.addRoom(room);
-        UserInRoom userInRoom = new UserInRoom();
-        userInRoom.setRoom(room);
-        userInRoom.setUser(userParameter);
+        UserInRoom userInRoom = createUserInRoomObject(room);
+        userInRoom.setRole(Role.OWNER);
         userInRoomService.addUserInRoom(userInRoom);
         User updatedUser = userService.getUserByLogin(userParameter.getLogin());
         return createMessage(room, updatedUser, String.format("room %s was created", roomName),
                 updatedUser, MessageType.CREATE);
+    }
+
+    private Room createRoomObject(String roomName) {
+        Room room = new Room();
+        room.setName(roomName);
+        room.setOwner(userParameter);
+        room = roomService.addRoom(room);
+        return room;
+    }
+
+    private UserInRoom createUserInRoomObject(Room room) {
+        UserInRoom userInRoom = new UserInRoom();
+        userInRoom.setRoom(room);
+        userInRoom.setUser(userParameter);
+        return userInRoom;
     }
 
     Message removeRoom() throws RoomCommandExecutionException {
@@ -114,9 +123,8 @@ class RoomCommandReceiver {
         if (Objects.isNull(room)) {
             throw new RoomCommandExecutionException(ROOM_NOT_SPECIFIED);
         }
-        UserInRoom userInRoom = new UserInRoom();
-        userInRoom.setUser(userParameter);
-        userInRoom.setRoom(room);
+        UserInRoom userInRoom = createUserInRoomObject(room);
+        userInRoom.setRole(Role.USER);
         userInRoomService.addUserInRoom(userInRoom);
         User updatedUser = userService.getUserByLogin(userParameter.getLogin());
         return createMessage(room, updatedUser, String.format("user %s was joined", userParameter.getLogin()),
@@ -135,6 +143,7 @@ class RoomCommandReceiver {
         UserInRoom userInRoom = new UserInRoom();
         userInRoom.setUser(specifiedUser);
         userInRoom.setRoom(room);
+        userInRoom.setRole(Role.USER);
         userInRoomService.addUserInRoom(userInRoom);
         specifiedUser = userService.getUserByLogin(specifiedUser.getLogin());
         return createMessage(room, specifiedUser, String.format("user %s was joined", specifiedUser.getLogin()),
@@ -161,14 +170,14 @@ class RoomCommandReceiver {
     }
 
     private Message disconnect(String userLogin) throws RoomCommandExecutionException {
-        if (roomParameter.getOwner().equals(userParameter) || userParameter.getRole().equals(Role.ADMINISTRATOR)) {
+        UserInRoom userInRoom = userInRoomService.findByUserAndRoom(userParameter, roomParameter);
+        if (Objects.isNull(userInRoom)) {
+            throw new RoomCommandExecutionException("User is not in this roomParameter");
+        }
+        if (userInRoom.getRole().equals(Role.OWNER) || userInRoom.getRole().equals(Role.ADMINISTRATOR)) {
             User specifiedUser = userService.getUserByLogin(userLogin);
             if (Objects.isNull(specifiedUser)) {
                 throw new RoomCommandExecutionException("User not found by specified login");
-            }
-            UserInRoom userInRoom = userInRoomService.findByUserAndRoom(specifiedUser, roomParameter);
-            if (Objects.isNull(userInRoom)) {
-                throw new RoomCommandExecutionException("User is not in this roomParameter");
             }
             userInRoomService.delete(userInRoom);
             specifiedUser = userService.getUserByLogin(specifiedUser.getLogin());
@@ -179,7 +188,11 @@ class RoomCommandReceiver {
     }
 
     Message rename() throws RoomCommandExecutionException {
-        if (roomParameter.getOwner().equals(userParameter) || userParameter.getRole().equals(Role.ADMINISTRATOR)) {
+        UserInRoom userInRoom = userInRoomService.findByUserAndRoom(userParameter, roomParameter);
+        if (Objects.isNull(userInRoom)) {
+            throw new RoomCommandExecutionException("User is not in this roomParameter");
+        }
+        if (userInRoom.getRole().equals(Role.OWNER) || userInRoom.getRole().equals(Role.ADMINISTRATOR)) {
             Matcher matcher = Pattern.compile(RENAME_ROOM_REGEXP).matcher(command);
             if (matcher.find()) {
                 return rename(matcher.group(1));
