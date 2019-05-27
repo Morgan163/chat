@@ -7,14 +7,28 @@
     <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
 </head>
 <body>
-    <div id="username-part" class="container">
-        <form action="#" th:action="@{/login}" method="post" id="username-form" name="usernameForm">
-            <input type="text" name="login" id="username" placeholder="Username" class="validate"/>
-            <input type="password" name="password" id="password" placeholder="Password" class="validate"/>
-            <button class="btn waves-effect waves-light" type="submit" id="username-button">Join to chat</button>
-            <span class="helper-text" data-error="Wrong login"></span>
-        </form>
+<div id="username-part" class="container">
+    <p th:text="${successful}"></p>
+    <form action="#" th:action="@{/login}" method="post" id="username-form" name="usernameForm">
+        <input type="text" name="login" id="username" placeholder="Username" class="validate"/>
+        <input type="password" name="password" id="password" placeholder="Password" class="validate"/>
+        <span class="helper-text" data-error="Wrong login"></span>
+        <table>
+            <tr>
+                <td>
+                    <button class="btn waves-effect waves-light" type="submit" id="username-button">Join to chat</button>
+                </td>
+                <td class="right-align">
+                    <form  method="get" th:action="@{/registration}">
+                        <button class="btn waves-effect waves-light" type="submit">Sign up</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </form>
+
     </div>
+
     <script type="text/javascript" src="js/materialize.js"></script>
     <script type="text/javascript" src="js/login.js"></script>
 </body>

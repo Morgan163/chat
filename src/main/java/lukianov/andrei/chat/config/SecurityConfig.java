@@ -22,8 +22,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
 
 
-    // регистрируем нашу реализацию UserDetailsService
-    // а также PasswordEncoder для приведения пароля в формат SHA1
     @Autowired
     public void registerGlobalAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth

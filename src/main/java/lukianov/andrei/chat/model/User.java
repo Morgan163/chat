@@ -39,6 +39,15 @@ public class User implements Serializable {
     @ToString.Exclude
     private Set<Room> rooms = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "black_list",
+            joinColumns = @JoinColumn(name = "owner_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonManagedReference
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<User> blackList = new HashSet<>();
+
     public User(String login, String password) {
         this.login = login;
         this.password = password;

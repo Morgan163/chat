@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>registration</title>
+    <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
+</head>
+<body>
+<div id="username-part" class="container">
+    <form action="#" th:action="@{/registrationPage}" method="post" id="username-form" name="usernameForm">
+        <input type="text" name="login" id="username" placeholder="Username" class="validate"/>
+        <input type="password" name="password" id="password" placeholder="Password" class="validate"/>
+        <button class="btn waves-effect waves-light" type="submit" id="username-button">Sing up</button>
+        <span class="helper-text" data-error="Wrong login"></span>
+        <p th:text="${error}"></p>
+    </form>
+</div>
+<script type="text/javascript" src="js/materialize.js"></script>
+<script type="text/javascript" src="js/login.js"></script>
+</body>
+</html>

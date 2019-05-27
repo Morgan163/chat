@@ -1,7 +1,7 @@
 package lukianov.andrei.chat.commands.impl.room;
 
 import lombok.RequiredArgsConstructor;
-import lukianov.andrei.chat.commands.RoomCommand;
+import lukianov.andrei.chat.commands.Command;
 import lukianov.andrei.chat.commands.TextCommands;
 import lukianov.andrei.chat.exceptions.RoomCommandExecutionException;
 import lukianov.andrei.chat.model.Room;
@@ -20,7 +20,7 @@ public class RoomCommandClient {
     private final UserInRoomService userInRoomService;
     private final UserService userService;
 
-    public RoomCommand resolveRoomCommand() throws RoomCommandExecutionException {
+    public Command resolveRoomCommand() throws RoomCommandExecutionException {
         RoomCommandReceiver roomCommandReceiver = new RoomCommandReceiver(command, userParameter, roomParameter,
                 roomService, userInRoomService, userService);
         if (command.startsWith(TextCommands.ROOM_CONNECT)) {
