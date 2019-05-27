@@ -13,7 +13,6 @@ import java.util.Set;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
@@ -47,11 +46,6 @@ public class User implements Serializable {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<User> blackList = new HashSet<>();
-
-    public User(String login, String password) {
-        this.login = login;
-        this.password = password;
-    }
 
     public void addRoom(Room room) {
         rooms.add(room);

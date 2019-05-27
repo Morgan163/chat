@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.*;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "room")

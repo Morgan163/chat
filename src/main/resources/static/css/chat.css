@@ -1,0 +1,15 @@
+.avatar-inline{
+    display: inline-block;
+}
+
+.chat-size{
+    max-height: 400px;
+    height: 400px;
+}
+.chat-size ul{
+    max-height: 400px;
+    height: 400px;
+    overflow: auto;
+    overflow-y: scroll;
+    margin: 0;
+}

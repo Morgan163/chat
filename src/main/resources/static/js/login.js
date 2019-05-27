@@ -19,4 +19,4 @@ function validateForm(event) {
     usernameForm.submit();
 }
 
-usernameForm.addEventListener('submit', validateForm, true);
+usernameButton.addEventListener('submit', validateForm, true);
