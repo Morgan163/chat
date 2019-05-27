@@ -3,7 +3,6 @@ package lukianov.andrei.chat.controller;
 import lombok.RequiredArgsConstructor;
 import lukianov.andrei.chat.model.User;
 import lukianov.andrei.chat.services.UserService;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
