@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .defaultSuccessUrl("/chat")
-                .failureUrl("/login?error=true")
+                .failureUrl("/login?successful=wrong%scredentials")
                 .usernameParameter("login")
                 .passwordParameter("password")
                 .permitAll()
