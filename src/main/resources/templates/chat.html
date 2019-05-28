@@ -4,44 +4,35 @@
 <head>
     <title>chat</title>
     <link type="text/css" rel="stylesheet" href="css/chat.css"/>
-    <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.css" media="screen,projection"/>
 </head>
-    <body>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-        <label><input type="text" id="username" th:value="${login}" readonly></label>
-        <label><input type="text" id="roomName" readonly></label>
-       <!-- <div id="chat">
-            <div id="received-messages" class="scrollspy">
-                <table id="chat-table">
-                </table>
-            </div>
-            <form id="messageForm">
-                <input type="text" id="message-field" placeholder="Write message" class="message-filed"/>
-                <button type="submit" class="message-button">Send message</button>
-            </form>
-        </div>-->
-        <div class="container">
-            <form id="commandForm">
-                <input type="text" id="command-field" placeholder="Write command" class="message-filed">
-                <button class="btn waves-effect waves-teal" type="submit" >SEND</button>
-            </form>
-        </div>
-        <div class="container">
-            <ul class="collection" id="rooms">
-            </ul>
-        </div>
-        <div class="container chat-size">
-            <ul class="collection" id="chat">
-            </ul>
-        </div>
-        <div class="container">
-            <form id="messageForm">
-                <input type="text" id="message-field" placeholder="Write message" class="message-filed">
-                <button class="btn waves-effect waves-teal" type="submit" >SEND</button>
-            </form>
-        </div>
-        <script type="text/javascript" src="js/materialize.js"></script>
-        <script src="js/main.js"></script>
-    </body>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<label><input type="text" id="username" th:value="${login}" readonly></label>
+<label><input type="text" id="roomName" readonly></label>
+
+<div class="container">
+    <form id="commandForm">
+        <input type="text" id="command-field" placeholder="Write command" class="message-filed">
+        <button class="btn waves-effect waves-teal" type="submit">SEND</button>
+    </form>
+</div>
+<div class="container">
+    <ul class="collection" id="rooms">
+    </ul>
+</div>
+<div class="container chat-size">
+    <ul class="collection" id="chat">
+    </ul>
+</div>
+<div class="container">
+    <form id="messageForm">
+        <input type="text" id="message-field" placeholder="Write message" class="message-filed">
+        <button class="btn waves-effect waves-teal" type="submit">SEND</button>
+    </form>
+</div>
+<script type="text/javascript" src="js/materialize.js"></script>
+<script src="js/main.js"></script>
+</body>
 </html>
