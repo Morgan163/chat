@@ -1,12 +1,14 @@
 package lukianov.andrei.chat.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class ClientMessage {
-    private final String content;
+    private String content;
 
-    private final String login;
+    private String login;
 
-    private final String room;
+    private String room;
 }
